@@ -4390,7 +4390,6 @@ state 179
     (96) if_statement -> IF expression THEN statement . ELSE statement
     (97) if_statement -> IF expression THEN statement .
 
-  ! shift/reduce conflict for ELSE resolved as shift
     ELSE            shift and go to state 226
     END             reduce using rule 97 (if_statement -> IF expression THEN statement .)
     SEMI            reduce using rule 97 (if_statement -> IF expression THEN statement .)
@@ -7450,7 +7449,3 @@ state 300
 
     SEMI            reduce using rule 65 (variant_item -> constant COLON LPAREN field_list RPAREN .)
 
-WARNING: 
-WARNING: Conflicts:
-WARNING: 
-WARNING: shift/reduce conflict for ELSE in state 179 resolved as shift

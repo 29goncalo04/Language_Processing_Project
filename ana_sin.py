@@ -12,7 +12,9 @@ precedence = (
     ('left', 'EQ', 'NE', 'LT', 'LE', 'GT', 'GE', 'IN'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE', 'DIV', 'MOD'),
-    ('left', 'COLON')
+    ('left', 'COLON'),
+    ('nonassoc', 'IFX'),
+    ('nonassoc', 'ELSE'),
 )
 
 # Programa
@@ -396,7 +398,7 @@ def p_procedure_call(p):
 # If
 def p_if_statement(p):
     '''if_statement : IF expression THEN statement ELSE statement
-                    | IF expression THEN statement'''   
+                    | IF expression THEN statement %prec IFX'''   
     if len(p) == 5:
         p[0] = ('if', p[2], p[4], None)
     else:
