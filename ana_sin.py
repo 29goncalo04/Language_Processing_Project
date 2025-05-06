@@ -6,6 +6,8 @@ lexer = build_lexer()
 
 # Precedences
 precedence = (
+    ('nonassoc', 'IFX'),          
+    ('nonassoc', 'ELSE'),          
     ('left', 'OR'),
     ('left', 'AND'),
     ('right', 'NOT'),
@@ -13,8 +15,6 @@ precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE', 'DIV', 'MOD'),
     ('left', 'COLON'),
-    ('nonassoc', 'IFX'),
-    ('nonassoc', 'ELSE'),
 )
 
 # Programa
