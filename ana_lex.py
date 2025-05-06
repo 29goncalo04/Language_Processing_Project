@@ -78,151 +78,151 @@ tokens = (
 # Pascal Standard é case-insensitive, usamos re.IGNORECASE ao construir o lexer
 
 def t_TIPO(t):
-    r'(integer|smallint|longint|real|boolean|string|char|byte)'
+    r'(\binteger\b|\breal\b|\bboolean\b|\bchar\b)'
     return t
 
 def t_BOOLEAN(t):
-    r'(true|false)'
+    r'(\btrue\b|\bfalse\b)'
     return t
 
 def t_AND(t):      
-    r'and'       
+    r'\band\b'       
     return t
 
 def t_ARRAY(t):    
-    r'array'     
+    r'\barray\b'     
     return t
 
 def t_BEGIN(t):    
-    r'begin'    
+    r'\bbegin\b'    
     return t
 
 def t_CASE(t):     
-    r'case'     
+    r'\bcase\b'     
     return t
 
 def t_CONST(t):    
-    r'const'    
+    r'\bconst\b'    
     return t
 
 def t_DIV(t):      
-    r'div'      
+    r'\bdiv\b'      
     return t
 
 def t_DOWNTO(t):   
-    r'downto'   
+    r'\bdownto\b'   
     return t
 
 def t_DO(t):       
-    r'do'       
+    r'\bdo\b'       
     return t
 
 def t_ELSE(t):     
-    r'else'     
+    r'\belse\b'     
     return t
 
 def t_END(t):      
-    r'end'      
+    r'\bend\b'      
     return t
 
 def t_FILE(t):     
-    r'file'     
+    r'\bfile\b'     
     return t
 
 def t_FOR(t):      
-    r'for'      
+    r'\bfor\b'      
     return t
 
 def t_FUNCTION(t): 
-    r'function' 
+    r'\bfunction\b' 
     return t
 
 def t_GOTO(t):     
-    r'goto'     
+    r'\bgoto\b'     
     return t
 
 def t_IF(t):       
-    r'if'       
+    r'\bif\b'       
     return t
 
 def t_IN(t):       
-    r'in'       
+    r'\bin\b'       
     return t
 
 def t_LABEL(t):    
-    r'label'    
+    r'\blabel\b'    
     return t
 
 def t_MOD(t):      
-    r'mod'      
+    r'\bmod\b'      
     return t
 
 def t_NIL(t):      
-    r'nil'      
+    r'\bnil\b'      
     return t
 
 def t_NOT(t):      
-    r'not'      
+    r'\bnot\b'      
     return t
 
 def t_OF(t):       
-    r'of'       
+    r'\bof\b'       
     return t
 
 def t_OR(t):       
-    r'or'       
+    r'\bor\b'       
     return t
 
 def t_PACKED(t):   
-    r'packed'   
+    r'\bpacked\b'   
     return t
 
 def t_PROCEDURE(t):
-    r'procedure'
+    r'\bprocedure\b'
     return t
 
 def t_PROGRAM(t):  
-    r'program'  
+    r'\bprogram\b'  
     return t
 
 def t_RECORD(t):   
-    r'record'
+    r'\brecord\b'
     return t
 
 def t_REPEAT(t):   
-    r'repeat'   
+    r'\brepeat\b'   
     return t
 
 def t_SET(t):      
-    r'set'      
+    r'\bset\b'      
     return t
 
 def t_THEN(t):     
-    r'then'     
+    r'\bthen\b'     
     return t
 
 def t_TO(t):       
-    r'to'       
+    r'\bto\b'       
     return t
 
 def t_TYPE(t):     
-    r'type'     
+    r'\btype\b'     
     return t
 
 def t_UNTIL(t):    
-    r'until'    
+    r'\buntil\b'    
     return t
 
 def t_VAR(t):      
-    r'var'      
+    r'\bvar\b'      
     return t
 
 def t_WHILE(t):    
-    r'while'    
+    r'\bwhile\b'    
     return t
 
 def t_WITH(t):     
-    r'with'     
+    r'\bwith\b'     
     return t
 
 # Operadores e símbolos simples

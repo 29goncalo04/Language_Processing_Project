@@ -1,6 +1,9 @@
 import sys
 import os
-from lexico import build_lexer
+from ana_lex import build_lexer
+from ana_sin import parse
+
+from pprint import PrettyPrinter #remover depois 
 
 def main():
     if len(sys.argv) != 2:
@@ -17,11 +20,15 @@ def main():
     with open(caminho_ficheiro, 'r', encoding='utf-8') as f:
         codigo = f.read()
 
-    lexer = build_lexer()
-    lexer.input(codigo)
+    # Cria lexer
+    # lexer = build_lexer()
+    # lexer.input(codigo)
 
-    for token in lexer:
-        print(f"{token.type}({token.value}) na linha {token.lineno}")
+    # for token in lexer:
+    #     print(f"{token.type}({token.value}) na linha {token.lineno}")
+    result = parse(codigo)
+    pp = PrettyPrinter(width=80, indent=4)
+    pp.pprint(result)
 
 if __name__ == "__main__":
     main()

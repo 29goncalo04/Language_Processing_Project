@@ -10,7 +10,7 @@ begin
     for i := length(bin) downto 1 do
     begin
         if bin[i] = '1' then
-                valor := valor + potencia;
+            valor := valor + potencia;
         potencia := potencia * 2;
     end;
 

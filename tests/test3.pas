@@ -3,7 +3,7 @@ program Maior3;
 var
     num1, num2, num3, maior: Integer;
 
-    begin
+begin
     { Ler 3 números }
     Write('Introduza o primeiro número: ');
     ReadLn(num1);
@@ -16,10 +16,12 @@ var
 
     { Calcular o maior }
     if num1 > num2 then
-        if num1 > num3 then maior := num1
+        if num1 > num3 then
+            maior := num1
         else maior := num3
     else
-        if num2 > num3 then maior := num2
+        if num2 > num3 then
+            maior := num2
         else maior := num3;
         
     { Escrever o resultado }
