@@ -125,8 +125,8 @@ Rule 119   expression -> constant
 Rule 120   expression -> ID LPAREN expression_list RPAREN
 Rule 121   expression -> LPAREN expression RPAREN
 Rule 122   expression -> LBRACKET expression_list RBRACKET
-Rule 123   expression -> expression COLON expression
-Rule 124   expression -> NOT expression
+Rule 123   expression -> NOT expression
+Rule 124   expression -> expression COLON expression
 Rule 125   expression -> expression PLUS expression
 Rule 126   expression -> expression MINUS expression
 Rule 127   expression -> expression TIMES expression
@@ -154,7 +154,7 @@ ASSIGN               : 90 98 99
 BEGIN                : 4 77
 BOOLEAN              : 56 115
 CASE                 : 62 102
-COLON                : 27 28 62 65 72 73 74 105 112 123
+COLON                : 27 28 62 65 72 73 74 105 112 124
 COMMA                : 22 51 67 107 110 141
 CONST                : 13 74
 DIV                  : 129
@@ -184,7 +184,7 @@ MINUS                : 126
 MOD                  : 130
 NE                   : 132
 NIL                  : 59 117
-NOT                  : 124
+NOT                  : 123
 OF                   : 43 44 49 50 62 102
 OR                   : 139
 PACKED               : 39
@@ -231,7 +231,7 @@ declaration          : 5
 declarations         : 4 5
 empty                : 3 6 69 89
 enum_type            : 34
-expression           : 16 90 91 96 97 98 98 99 99 100 101 102 121 123 123 124 125 125 126 126 127 127 128 128 129 129 130 130 131 131 132 132 133 133 134 134 135 135 136 136 137 137 138 138 139 139 140 141
+expression           : 16 90 91 96 97 98 98 99 99 100 101 102 121 123 124 124 125 125 126 126 127 127 128 128 129 129 130 130 131 131 132 132 133 133 134 134 135 135 136 136 137 137 138 138 139 139 140 141
 expression_list      : 94 120 122 141
 field_list           : 47 48 60 65
 file_type            : 38
@@ -914,8 +914,8 @@ state 48
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -970,8 +970,8 @@ state 50
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1083,8 +1083,8 @@ state 52
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1375,8 +1375,8 @@ state 72
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1432,8 +1432,8 @@ state 74
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1481,8 +1481,8 @@ state 75
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1525,7 +1525,7 @@ state 76
 
     (96) if_statement -> IF expression . THEN statement ELSE statement
     (97) if_statement -> IF expression . THEN statement
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -1678,8 +1678,8 @@ state 80
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1728,8 +1728,8 @@ state 81
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -1771,14 +1771,14 @@ state 81
 
 state 82
 
-    (124) expression -> NOT . expression
+    (123) expression -> NOT . expression
     (118) expression -> . variable
     (119) expression -> . constant
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2003,7 +2003,7 @@ state 88
 state 89
 
     (100) while_statement -> WHILE expression . DO statement
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -2051,7 +2051,7 @@ state 90
 state 91
 
     (102) case_statement -> CASE expression . OF case_list END
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -2220,8 +2220,8 @@ state 99
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2499,7 +2499,7 @@ state 110
 state 111
 
     (90) assignment -> variable ASSIGN expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -2586,7 +2586,7 @@ state 113
 state 114
 
     (140) expression_list -> expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -2627,7 +2627,7 @@ state 114
 state 115
 
     (91) variable -> ID LBRACKET expression . RBRACKET
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -2730,14 +2730,14 @@ state 116
 
 state 117
 
-    (123) expression -> expression COLON . expression
+    (124) expression -> expression COLON . expression
     (118) expression -> . variable
     (119) expression -> . constant
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2784,8 +2784,8 @@ state 118
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2832,8 +2832,8 @@ state 119
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2880,8 +2880,8 @@ state 120
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2928,8 +2928,8 @@ state 121
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -2976,8 +2976,8 @@ state 122
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3024,8 +3024,8 @@ state 123
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3072,8 +3072,8 @@ state 124
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3120,8 +3120,8 @@ state 125
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3168,8 +3168,8 @@ state 126
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3216,8 +3216,8 @@ state 127
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3264,8 +3264,8 @@ state 128
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3312,8 +3312,8 @@ state 129
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3360,8 +3360,8 @@ state 130
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3408,8 +3408,8 @@ state 131
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3456,8 +3456,8 @@ state 132
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3506,8 +3506,8 @@ state 133
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3550,7 +3550,7 @@ state 133
 state 134
 
     (121) expression -> LPAREN expression . RPAREN
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -3597,8 +3597,8 @@ state 135
 
 state 136
 
-    (124) expression -> NOT expression .
-    (123) expression -> expression . COLON expression
+    (123) expression -> NOT expression .
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -3615,27 +3615,27 @@ state 136
     (138) expression -> expression . AND expression
     (139) expression -> expression . OR expression
 
-    THEN            reduce using rule 124 (expression -> NOT expression .)
-    COLON           reduce using rule 124 (expression -> NOT expression .)
-    MOD             reduce using rule 124 (expression -> NOT expression .)
-    AND             reduce using rule 124 (expression -> NOT expression .)
-    OR              reduce using rule 124 (expression -> NOT expression .)
-    DO              reduce using rule 124 (expression -> NOT expression .)
-    OF              reduce using rule 124 (expression -> NOT expression .)
-    END             reduce using rule 124 (expression -> NOT expression .)
-    SEMI            reduce using rule 124 (expression -> NOT expression .)
-    UNTIL           reduce using rule 124 (expression -> NOT expression .)
-    ELSE            reduce using rule 124 (expression -> NOT expression .)
-    RPAREN          reduce using rule 124 (expression -> NOT expression .)
-    COMMA           reduce using rule 124 (expression -> NOT expression .)
-    RBRACKET        reduce using rule 124 (expression -> NOT expression .)
-    TO              reduce using rule 124 (expression -> NOT expression .)
-    DOWNTO          reduce using rule 124 (expression -> NOT expression .)
+    THEN            reduce using rule 123 (expression -> NOT expression .)
+    AND             reduce using rule 123 (expression -> NOT expression .)
+    OR              reduce using rule 123 (expression -> NOT expression .)
+    DO              reduce using rule 123 (expression -> NOT expression .)
+    OF              reduce using rule 123 (expression -> NOT expression .)
+    END             reduce using rule 123 (expression -> NOT expression .)
+    SEMI            reduce using rule 123 (expression -> NOT expression .)
+    UNTIL           reduce using rule 123 (expression -> NOT expression .)
+    ELSE            reduce using rule 123 (expression -> NOT expression .)
+    RPAREN          reduce using rule 123 (expression -> NOT expression .)
+    COMMA           reduce using rule 123 (expression -> NOT expression .)
+    RBRACKET        reduce using rule 123 (expression -> NOT expression .)
+    TO              reduce using rule 123 (expression -> NOT expression .)
+    DOWNTO          reduce using rule 123 (expression -> NOT expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
     EQ              shift and go to state 124
     NE              shift and go to state 125
     LT              shift and go to state 126
@@ -3644,20 +3644,20 @@ state 136
     GE              shift and go to state 129
     IN              shift and go to state 130
 
-  ! PLUS            [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! MINUS           [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! TIMES           [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! DIVIDE          [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! DIV             [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! EQ              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! NE              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! LT              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! LE              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! GT              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! GE              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! IN              [ reduce using rule 124 (expression -> NOT expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! COLON           [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! PLUS            [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! MINUS           [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! TIMES           [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! DIVIDE          [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! DIV             [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! MOD             [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! EQ              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! NE              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! LT              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! LE              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! GT              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! GE              [ reduce using rule 123 (expression -> NOT expression .) ]
+  ! IN              [ reduce using rule 123 (expression -> NOT expression .) ]
   ! AND             [ shift and go to state 131 ]
   ! OR              [ shift and go to state 132 ]
 
@@ -3671,8 +3671,8 @@ state 137
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3783,8 +3783,8 @@ state 139
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -3950,7 +3950,7 @@ state 144
 state 145
 
     (16) CONST_ITEM -> ID EQ expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4309,8 +4309,8 @@ state 177
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -4401,8 +4401,8 @@ state 179
 
 state 180
 
-    (123) expression -> expression COLON expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression COLON expression .
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4419,73 +4419,57 @@ state 180
     (138) expression -> expression . AND expression
     (139) expression -> expression . OR expression
 
-  ! shift/reduce conflict for COLON resolved as shift
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-  ! shift/reduce conflict for DIV resolved as shift
-  ! shift/reduce conflict for MOD resolved as shift
-  ! shift/reduce conflict for EQ resolved as shift
-  ! shift/reduce conflict for NE resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for LE resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for GE resolved as shift
-  ! shift/reduce conflict for IN resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
-    THEN            reduce using rule 123 (expression -> expression COLON expression .)
-    DO              reduce using rule 123 (expression -> expression COLON expression .)
-    OF              reduce using rule 123 (expression -> expression COLON expression .)
-    END             reduce using rule 123 (expression -> expression COLON expression .)
-    SEMI            reduce using rule 123 (expression -> expression COLON expression .)
-    UNTIL           reduce using rule 123 (expression -> expression COLON expression .)
-    ELSE            reduce using rule 123 (expression -> expression COLON expression .)
-    RPAREN          reduce using rule 123 (expression -> expression COLON expression .)
-    COMMA           reduce using rule 123 (expression -> expression COLON expression .)
-    RBRACKET        reduce using rule 123 (expression -> expression COLON expression .)
-    TO              reduce using rule 123 (expression -> expression COLON expression .)
-    DOWNTO          reduce using rule 123 (expression -> expression COLON expression .)
-    COLON           shift and go to state 117
-    PLUS            shift and go to state 118
-    MINUS           shift and go to state 119
-    TIMES           shift and go to state 120
-    DIVIDE          shift and go to state 121
-    DIV             shift and go to state 122
-    MOD             shift and go to state 123
-    EQ              shift and go to state 124
-    NE              shift and go to state 125
-    LT              shift and go to state 126
-    LE              shift and go to state 127
-    GT              shift and go to state 128
-    GE              shift and go to state 129
-    IN              shift and go to state 130
-    AND             shift and go to state 131
-    OR              shift and go to state 132
+    THEN            reduce using rule 124 (expression -> expression COLON expression .)
+    COLON           reduce using rule 124 (expression -> expression COLON expression .)
+    PLUS            reduce using rule 124 (expression -> expression COLON expression .)
+    MINUS           reduce using rule 124 (expression -> expression COLON expression .)
+    TIMES           reduce using rule 124 (expression -> expression COLON expression .)
+    DIVIDE          reduce using rule 124 (expression -> expression COLON expression .)
+    DIV             reduce using rule 124 (expression -> expression COLON expression .)
+    MOD             reduce using rule 124 (expression -> expression COLON expression .)
+    EQ              reduce using rule 124 (expression -> expression COLON expression .)
+    NE              reduce using rule 124 (expression -> expression COLON expression .)
+    LT              reduce using rule 124 (expression -> expression COLON expression .)
+    LE              reduce using rule 124 (expression -> expression COLON expression .)
+    GT              reduce using rule 124 (expression -> expression COLON expression .)
+    GE              reduce using rule 124 (expression -> expression COLON expression .)
+    IN              reduce using rule 124 (expression -> expression COLON expression .)
+    AND             reduce using rule 124 (expression -> expression COLON expression .)
+    OR              reduce using rule 124 (expression -> expression COLON expression .)
+    DO              reduce using rule 124 (expression -> expression COLON expression .)
+    OF              reduce using rule 124 (expression -> expression COLON expression .)
+    END             reduce using rule 124 (expression -> expression COLON expression .)
+    SEMI            reduce using rule 124 (expression -> expression COLON expression .)
+    UNTIL           reduce using rule 124 (expression -> expression COLON expression .)
+    ELSE            reduce using rule 124 (expression -> expression COLON expression .)
+    RPAREN          reduce using rule 124 (expression -> expression COLON expression .)
+    COMMA           reduce using rule 124 (expression -> expression COLON expression .)
+    RBRACKET        reduce using rule 124 (expression -> expression COLON expression .)
+    TO              reduce using rule 124 (expression -> expression COLON expression .)
+    DOWNTO          reduce using rule 124 (expression -> expression COLON expression .)
 
-  ! COLON           [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! PLUS            [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! MINUS           [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! TIMES           [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! DIVIDE          [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! DIV             [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! MOD             [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! EQ              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! NE              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! LT              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! LE              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! GT              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! GE              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! IN              [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! AND             [ reduce using rule 123 (expression -> expression COLON expression .) ]
-  ! OR              [ reduce using rule 123 (expression -> expression COLON expression .) ]
+  ! COLON           [ shift and go to state 117 ]
+  ! PLUS            [ shift and go to state 118 ]
+  ! MINUS           [ shift and go to state 119 ]
+  ! TIMES           [ shift and go to state 120 ]
+  ! DIVIDE          [ shift and go to state 121 ]
+  ! DIV             [ shift and go to state 122 ]
+  ! MOD             [ shift and go to state 123 ]
+  ! EQ              [ shift and go to state 124 ]
+  ! NE              [ shift and go to state 125 ]
+  ! LT              [ shift and go to state 126 ]
+  ! LE              [ shift and go to state 127 ]
+  ! GT              [ shift and go to state 128 ]
+  ! GE              [ shift and go to state 129 ]
+  ! IN              [ shift and go to state 130 ]
+  ! AND             [ shift and go to state 131 ]
+  ! OR              [ shift and go to state 132 ]
 
 
 state 181
 
     (125) expression -> expression PLUS expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4503,10 +4487,8 @@ state 181
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 125 (expression -> expression PLUS expression .)
-    COLON           reduce using rule 125 (expression -> expression PLUS expression .)
     PLUS            reduce using rule 125 (expression -> expression PLUS expression .)
     MINUS           reduce using rule 125 (expression -> expression PLUS expression .)
-    MOD             reduce using rule 125 (expression -> expression PLUS expression .)
     EQ              reduce using rule 125 (expression -> expression PLUS expression .)
     NE              reduce using rule 125 (expression -> expression PLUS expression .)
     LT              reduce using rule 125 (expression -> expression PLUS expression .)
@@ -4527,17 +4509,19 @@ state 181
     RBRACKET        reduce using rule 125 (expression -> expression PLUS expression .)
     TO              reduce using rule 125 (expression -> expression PLUS expression .)
     DOWNTO          reduce using rule 125 (expression -> expression PLUS expression .)
+    COLON           shift and go to state 117
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 125 (expression -> expression PLUS expression .) ]
   ! TIMES           [ reduce using rule 125 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 125 (expression -> expression PLUS expression .) ]
   ! DIV             [ reduce using rule 125 (expression -> expression PLUS expression .) ]
-  ! COLON           [ shift and go to state 117 ]
+  ! MOD             [ reduce using rule 125 (expression -> expression PLUS expression .) ]
   ! PLUS            [ shift and go to state 118 ]
   ! MINUS           [ shift and go to state 119 ]
-  ! MOD             [ shift and go to state 123 ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -4552,7 +4536,7 @@ state 181
 state 182
 
     (126) expression -> expression MINUS expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4570,10 +4554,8 @@ state 182
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 126 (expression -> expression MINUS expression .)
-    COLON           reduce using rule 126 (expression -> expression MINUS expression .)
     PLUS            reduce using rule 126 (expression -> expression MINUS expression .)
     MINUS           reduce using rule 126 (expression -> expression MINUS expression .)
-    MOD             reduce using rule 126 (expression -> expression MINUS expression .)
     EQ              reduce using rule 126 (expression -> expression MINUS expression .)
     NE              reduce using rule 126 (expression -> expression MINUS expression .)
     LT              reduce using rule 126 (expression -> expression MINUS expression .)
@@ -4594,17 +4576,19 @@ state 182
     RBRACKET        reduce using rule 126 (expression -> expression MINUS expression .)
     TO              reduce using rule 126 (expression -> expression MINUS expression .)
     DOWNTO          reduce using rule 126 (expression -> expression MINUS expression .)
+    COLON           shift and go to state 117
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 126 (expression -> expression MINUS expression .) ]
   ! TIMES           [ reduce using rule 126 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 126 (expression -> expression MINUS expression .) ]
   ! DIV             [ reduce using rule 126 (expression -> expression MINUS expression .) ]
-  ! COLON           [ shift and go to state 117 ]
+  ! MOD             [ reduce using rule 126 (expression -> expression MINUS expression .) ]
   ! PLUS            [ shift and go to state 118 ]
   ! MINUS           [ shift and go to state 119 ]
-  ! MOD             [ shift and go to state 123 ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -4619,7 +4603,7 @@ state 182
 state 183
 
     (127) expression -> expression TIMES expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4637,7 +4621,6 @@ state 183
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 127 (expression -> expression TIMES expression .)
-    COLON           reduce using rule 127 (expression -> expression TIMES expression .)
     PLUS            reduce using rule 127 (expression -> expression TIMES expression .)
     MINUS           reduce using rule 127 (expression -> expression TIMES expression .)
     TIMES           reduce using rule 127 (expression -> expression TIMES expression .)
@@ -4664,8 +4647,9 @@ state 183
     RBRACKET        reduce using rule 127 (expression -> expression TIMES expression .)
     TO              reduce using rule 127 (expression -> expression TIMES expression .)
     DOWNTO          reduce using rule 127 (expression -> expression TIMES expression .)
+    COLON           shift and go to state 117
 
-  ! COLON           [ shift and go to state 117 ]
+  ! COLON           [ reduce using rule 127 (expression -> expression TIMES expression .) ]
   ! PLUS            [ shift and go to state 118 ]
   ! MINUS           [ shift and go to state 119 ]
   ! TIMES           [ shift and go to state 120 ]
@@ -4686,7 +4670,7 @@ state 183
 state 184
 
     (128) expression -> expression DIVIDE expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4704,7 +4688,6 @@ state 184
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 128 (expression -> expression DIVIDE expression .)
-    COLON           reduce using rule 128 (expression -> expression DIVIDE expression .)
     PLUS            reduce using rule 128 (expression -> expression DIVIDE expression .)
     MINUS           reduce using rule 128 (expression -> expression DIVIDE expression .)
     TIMES           reduce using rule 128 (expression -> expression DIVIDE expression .)
@@ -4731,8 +4714,9 @@ state 184
     RBRACKET        reduce using rule 128 (expression -> expression DIVIDE expression .)
     TO              reduce using rule 128 (expression -> expression DIVIDE expression .)
     DOWNTO          reduce using rule 128 (expression -> expression DIVIDE expression .)
+    COLON           shift and go to state 117
 
-  ! COLON           [ shift and go to state 117 ]
+  ! COLON           [ reduce using rule 128 (expression -> expression DIVIDE expression .) ]
   ! PLUS            [ shift and go to state 118 ]
   ! MINUS           [ shift and go to state 119 ]
   ! TIMES           [ shift and go to state 120 ]
@@ -4753,7 +4737,7 @@ state 184
 state 185
 
     (129) expression -> expression DIV expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4771,7 +4755,6 @@ state 185
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 129 (expression -> expression DIV expression .)
-    COLON           reduce using rule 129 (expression -> expression DIV expression .)
     PLUS            reduce using rule 129 (expression -> expression DIV expression .)
     MINUS           reduce using rule 129 (expression -> expression DIV expression .)
     TIMES           reduce using rule 129 (expression -> expression DIV expression .)
@@ -4798,8 +4781,9 @@ state 185
     RBRACKET        reduce using rule 129 (expression -> expression DIV expression .)
     TO              reduce using rule 129 (expression -> expression DIV expression .)
     DOWNTO          reduce using rule 129 (expression -> expression DIV expression .)
+    COLON           shift and go to state 117
 
-  ! COLON           [ shift and go to state 117 ]
+  ! COLON           [ reduce using rule 129 (expression -> expression DIV expression .) ]
   ! PLUS            [ shift and go to state 118 ]
   ! MINUS           [ shift and go to state 119 ]
   ! TIMES           [ shift and go to state 120 ]
@@ -4820,7 +4804,7 @@ state 185
 state 186
 
     (130) expression -> expression MOD expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4837,23 +4821,22 @@ state 186
     (138) expression -> expression . AND expression
     (139) expression -> expression . OR expression
 
-  ! shift/reduce conflict for COLON resolved as shift
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-  ! shift/reduce conflict for DIV resolved as shift
-  ! shift/reduce conflict for MOD resolved as shift
-  ! shift/reduce conflict for EQ resolved as shift
-  ! shift/reduce conflict for NE resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for LE resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for GE resolved as shift
-  ! shift/reduce conflict for IN resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
     THEN            reduce using rule 130 (expression -> expression MOD expression .)
+    PLUS            reduce using rule 130 (expression -> expression MOD expression .)
+    MINUS           reduce using rule 130 (expression -> expression MOD expression .)
+    TIMES           reduce using rule 130 (expression -> expression MOD expression .)
+    DIVIDE          reduce using rule 130 (expression -> expression MOD expression .)
+    DIV             reduce using rule 130 (expression -> expression MOD expression .)
+    MOD             reduce using rule 130 (expression -> expression MOD expression .)
+    EQ              reduce using rule 130 (expression -> expression MOD expression .)
+    NE              reduce using rule 130 (expression -> expression MOD expression .)
+    LT              reduce using rule 130 (expression -> expression MOD expression .)
+    LE              reduce using rule 130 (expression -> expression MOD expression .)
+    GT              reduce using rule 130 (expression -> expression MOD expression .)
+    GE              reduce using rule 130 (expression -> expression MOD expression .)
+    IN              reduce using rule 130 (expression -> expression MOD expression .)
+    AND             reduce using rule 130 (expression -> expression MOD expression .)
+    OR              reduce using rule 130 (expression -> expression MOD expression .)
     DO              reduce using rule 130 (expression -> expression MOD expression .)
     OF              reduce using rule 130 (expression -> expression MOD expression .)
     END             reduce using rule 130 (expression -> expression MOD expression .)
@@ -4866,44 +4849,29 @@ state 186
     TO              reduce using rule 130 (expression -> expression MOD expression .)
     DOWNTO          reduce using rule 130 (expression -> expression MOD expression .)
     COLON           shift and go to state 117
-    PLUS            shift and go to state 118
-    MINUS           shift and go to state 119
-    TIMES           shift and go to state 120
-    DIVIDE          shift and go to state 121
-    DIV             shift and go to state 122
-    MOD             shift and go to state 123
-    EQ              shift and go to state 124
-    NE              shift and go to state 125
-    LT              shift and go to state 126
-    LE              shift and go to state 127
-    GT              shift and go to state 128
-    GE              shift and go to state 129
-    IN              shift and go to state 130
-    AND             shift and go to state 131
-    OR              shift and go to state 132
 
   ! COLON           [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! PLUS            [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! MINUS           [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! TIMES           [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! DIVIDE          [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! DIV             [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! MOD             [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! EQ              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! NE              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! LT              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! LE              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! GT              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! GE              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! IN              [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! AND             [ reduce using rule 130 (expression -> expression MOD expression .) ]
-  ! OR              [ reduce using rule 130 (expression -> expression MOD expression .) ]
+  ! PLUS            [ shift and go to state 118 ]
+  ! MINUS           [ shift and go to state 119 ]
+  ! TIMES           [ shift and go to state 120 ]
+  ! DIVIDE          [ shift and go to state 121 ]
+  ! DIV             [ shift and go to state 122 ]
+  ! MOD             [ shift and go to state 123 ]
+  ! EQ              [ shift and go to state 124 ]
+  ! NE              [ shift and go to state 125 ]
+  ! LT              [ shift and go to state 126 ]
+  ! LE              [ shift and go to state 127 ]
+  ! GT              [ shift and go to state 128 ]
+  ! GE              [ shift and go to state 129 ]
+  ! IN              [ shift and go to state 130 ]
+  ! AND             [ shift and go to state 131 ]
+  ! OR              [ shift and go to state 132 ]
 
 
 state 187
 
     (131) expression -> expression EQ expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4921,8 +4889,6 @@ state 187
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 131 (expression -> expression EQ expression .)
-    COLON           reduce using rule 131 (expression -> expression EQ expression .)
-    MOD             reduce using rule 131 (expression -> expression EQ expression .)
     EQ              reduce using rule 131 (expression -> expression EQ expression .)
     NE              reduce using rule 131 (expression -> expression EQ expression .)
     LT              reduce using rule 131 (expression -> expression EQ expression .)
@@ -4943,19 +4909,21 @@ state 187
     RBRACKET        reduce using rule 131 (expression -> expression EQ expression .)
     TO              reduce using rule 131 (expression -> expression EQ expression .)
     DOWNTO          reduce using rule 131 (expression -> expression EQ expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! PLUS            [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! MINUS           [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! TIMES           [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! DIVIDE          [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! DIV             [ reduce using rule 131 (expression -> expression EQ expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 131 (expression -> expression EQ expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -4970,7 +4938,7 @@ state 187
 state 188
 
     (132) expression -> expression NE expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -4988,8 +4956,6 @@ state 188
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 132 (expression -> expression NE expression .)
-    COLON           reduce using rule 132 (expression -> expression NE expression .)
-    MOD             reduce using rule 132 (expression -> expression NE expression .)
     EQ              reduce using rule 132 (expression -> expression NE expression .)
     NE              reduce using rule 132 (expression -> expression NE expression .)
     LT              reduce using rule 132 (expression -> expression NE expression .)
@@ -5010,19 +4976,21 @@ state 188
     RBRACKET        reduce using rule 132 (expression -> expression NE expression .)
     TO              reduce using rule 132 (expression -> expression NE expression .)
     DOWNTO          reduce using rule 132 (expression -> expression NE expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! PLUS            [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! MINUS           [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! TIMES           [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! DIVIDE          [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! DIV             [ reduce using rule 132 (expression -> expression NE expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 132 (expression -> expression NE expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5037,7 +5005,7 @@ state 188
 state 189
 
     (133) expression -> expression LT expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5055,8 +5023,6 @@ state 189
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 133 (expression -> expression LT expression .)
-    COLON           reduce using rule 133 (expression -> expression LT expression .)
-    MOD             reduce using rule 133 (expression -> expression LT expression .)
     EQ              reduce using rule 133 (expression -> expression LT expression .)
     NE              reduce using rule 133 (expression -> expression LT expression .)
     LT              reduce using rule 133 (expression -> expression LT expression .)
@@ -5077,19 +5043,21 @@ state 189
     RBRACKET        reduce using rule 133 (expression -> expression LT expression .)
     TO              reduce using rule 133 (expression -> expression LT expression .)
     DOWNTO          reduce using rule 133 (expression -> expression LT expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! PLUS            [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! MINUS           [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! TIMES           [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! DIVIDE          [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! DIV             [ reduce using rule 133 (expression -> expression LT expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 133 (expression -> expression LT expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5104,7 +5072,7 @@ state 189
 state 190
 
     (134) expression -> expression LE expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5122,8 +5090,6 @@ state 190
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 134 (expression -> expression LE expression .)
-    COLON           reduce using rule 134 (expression -> expression LE expression .)
-    MOD             reduce using rule 134 (expression -> expression LE expression .)
     EQ              reduce using rule 134 (expression -> expression LE expression .)
     NE              reduce using rule 134 (expression -> expression LE expression .)
     LT              reduce using rule 134 (expression -> expression LE expression .)
@@ -5144,19 +5110,21 @@ state 190
     RBRACKET        reduce using rule 134 (expression -> expression LE expression .)
     TO              reduce using rule 134 (expression -> expression LE expression .)
     DOWNTO          reduce using rule 134 (expression -> expression LE expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! PLUS            [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! MINUS           [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! TIMES           [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! DIVIDE          [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! DIV             [ reduce using rule 134 (expression -> expression LE expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 134 (expression -> expression LE expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5171,7 +5139,7 @@ state 190
 state 191
 
     (135) expression -> expression GT expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5189,8 +5157,6 @@ state 191
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 135 (expression -> expression GT expression .)
-    COLON           reduce using rule 135 (expression -> expression GT expression .)
-    MOD             reduce using rule 135 (expression -> expression GT expression .)
     EQ              reduce using rule 135 (expression -> expression GT expression .)
     NE              reduce using rule 135 (expression -> expression GT expression .)
     LT              reduce using rule 135 (expression -> expression GT expression .)
@@ -5211,19 +5177,21 @@ state 191
     RBRACKET        reduce using rule 135 (expression -> expression GT expression .)
     TO              reduce using rule 135 (expression -> expression GT expression .)
     DOWNTO          reduce using rule 135 (expression -> expression GT expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! PLUS            [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! MINUS           [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! TIMES           [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! DIVIDE          [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! DIV             [ reduce using rule 135 (expression -> expression GT expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 135 (expression -> expression GT expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5238,7 +5206,7 @@ state 191
 state 192
 
     (136) expression -> expression GE expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5256,8 +5224,6 @@ state 192
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 136 (expression -> expression GE expression .)
-    COLON           reduce using rule 136 (expression -> expression GE expression .)
-    MOD             reduce using rule 136 (expression -> expression GE expression .)
     EQ              reduce using rule 136 (expression -> expression GE expression .)
     NE              reduce using rule 136 (expression -> expression GE expression .)
     LT              reduce using rule 136 (expression -> expression GE expression .)
@@ -5278,19 +5244,21 @@ state 192
     RBRACKET        reduce using rule 136 (expression -> expression GE expression .)
     TO              reduce using rule 136 (expression -> expression GE expression .)
     DOWNTO          reduce using rule 136 (expression -> expression GE expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! PLUS            [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! MINUS           [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! TIMES           [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! DIVIDE          [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! DIV             [ reduce using rule 136 (expression -> expression GE expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 136 (expression -> expression GE expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5305,7 +5273,7 @@ state 192
 state 193
 
     (137) expression -> expression IN expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5323,8 +5291,6 @@ state 193
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 137 (expression -> expression IN expression .)
-    COLON           reduce using rule 137 (expression -> expression IN expression .)
-    MOD             reduce using rule 137 (expression -> expression IN expression .)
     EQ              reduce using rule 137 (expression -> expression IN expression .)
     NE              reduce using rule 137 (expression -> expression IN expression .)
     LT              reduce using rule 137 (expression -> expression IN expression .)
@@ -5345,19 +5311,21 @@ state 193
     RBRACKET        reduce using rule 137 (expression -> expression IN expression .)
     TO              reduce using rule 137 (expression -> expression IN expression .)
     DOWNTO          reduce using rule 137 (expression -> expression IN expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
 
+  ! COLON           [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! PLUS            [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! MINUS           [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! TIMES           [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! DIVIDE          [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! DIV             [ reduce using rule 137 (expression -> expression IN expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
+  ! MOD             [ reduce using rule 137 (expression -> expression IN expression .) ]
   ! EQ              [ shift and go to state 124 ]
   ! NE              [ shift and go to state 125 ]
   ! LT              [ shift and go to state 126 ]
@@ -5372,7 +5340,7 @@ state 193
 state 194
 
     (138) expression -> expression AND expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5390,8 +5358,6 @@ state 194
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 138 (expression -> expression AND expression .)
-    COLON           reduce using rule 138 (expression -> expression AND expression .)
-    MOD             reduce using rule 138 (expression -> expression AND expression .)
     AND             reduce using rule 138 (expression -> expression AND expression .)
     OR              reduce using rule 138 (expression -> expression AND expression .)
     DO              reduce using rule 138 (expression -> expression AND expression .)
@@ -5405,11 +5371,13 @@ state 194
     RBRACKET        reduce using rule 138 (expression -> expression AND expression .)
     TO              reduce using rule 138 (expression -> expression AND expression .)
     DOWNTO          reduce using rule 138 (expression -> expression AND expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
     EQ              shift and go to state 124
     NE              shift and go to state 125
     LT              shift and go to state 126
@@ -5418,11 +5386,13 @@ state 194
     GE              shift and go to state 129
     IN              shift and go to state 130
 
+  ! COLON           [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! PLUS            [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! MINUS           [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! TIMES           [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! DIVIDE          [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! DIV             [ reduce using rule 138 (expression -> expression AND expression .) ]
+  ! MOD             [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! EQ              [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! NE              [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! LT              [ reduce using rule 138 (expression -> expression AND expression .) ]
@@ -5430,8 +5400,6 @@ state 194
   ! GT              [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! GE              [ reduce using rule 138 (expression -> expression AND expression .) ]
   ! IN              [ reduce using rule 138 (expression -> expression AND expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
   ! AND             [ shift and go to state 131 ]
   ! OR              [ shift and go to state 132 ]
 
@@ -5439,7 +5407,7 @@ state 194
 state 195
 
     (139) expression -> expression OR expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5457,8 +5425,6 @@ state 195
     (139) expression -> expression . OR expression
 
     THEN            reduce using rule 139 (expression -> expression OR expression .)
-    COLON           reduce using rule 139 (expression -> expression OR expression .)
-    MOD             reduce using rule 139 (expression -> expression OR expression .)
     OR              reduce using rule 139 (expression -> expression OR expression .)
     DO              reduce using rule 139 (expression -> expression OR expression .)
     OF              reduce using rule 139 (expression -> expression OR expression .)
@@ -5471,11 +5437,13 @@ state 195
     RBRACKET        reduce using rule 139 (expression -> expression OR expression .)
     TO              reduce using rule 139 (expression -> expression OR expression .)
     DOWNTO          reduce using rule 139 (expression -> expression OR expression .)
+    COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
     TIMES           shift and go to state 120
     DIVIDE          shift and go to state 121
     DIV             shift and go to state 122
+    MOD             shift and go to state 123
     EQ              shift and go to state 124
     NE              shift and go to state 125
     LT              shift and go to state 126
@@ -5485,11 +5453,13 @@ state 195
     IN              shift and go to state 130
     AND             shift and go to state 131
 
+  ! COLON           [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! PLUS            [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! MINUS           [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! TIMES           [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! DIVIDE          [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! DIV             [ reduce using rule 139 (expression -> expression OR expression .) ]
+  ! MOD             [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! EQ              [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! NE              [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! LT              [ reduce using rule 139 (expression -> expression OR expression .) ]
@@ -5498,8 +5468,6 @@ state 195
   ! GE              [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! IN              [ reduce using rule 139 (expression -> expression OR expression .) ]
   ! AND             [ reduce using rule 139 (expression -> expression OR expression .) ]
-  ! COLON           [ shift and go to state 117 ]
-  ! MOD             [ shift and go to state 123 ]
   ! OR              [ shift and go to state 132 ]
 
 
@@ -5584,7 +5552,7 @@ state 199
 
     (98) for_statement -> FOR ID ASSIGN expression . TO expression DO statement
     (99) for_statement -> FOR ID ASSIGN expression . DOWNTO expression DO statement
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -5634,7 +5602,7 @@ state 200
 state 201
 
     (101) repeat_statement -> REPEAT statement_list UNTIL expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -6136,7 +6104,7 @@ state 224
 state 225
 
     (141) expression_list -> expression_list COMMA expression .
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -6280,8 +6248,8 @@ state 228
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -6328,8 +6296,8 @@ state 229
     (120) expression -> . ID LPAREN expression_list RPAREN
     (121) expression -> . LPAREN expression RPAREN
     (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . expression COLON expression
-    (124) expression -> . NOT expression
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
     (125) expression -> . expression PLUS expression
     (126) expression -> . expression MINUS expression
     (127) expression -> . expression TIMES expression
@@ -6852,7 +6820,7 @@ state 260
 state 261
 
     (98) for_statement -> FOR ID ASSIGN expression TO expression . DO statement
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -6891,7 +6859,7 @@ state 261
 state 262
 
     (99) for_statement -> FOR ID ASSIGN expression DOWNTO expression . DO statement
-    (123) expression -> expression . COLON expression
+    (124) expression -> expression . COLON expression
     (125) expression -> expression . PLUS expression
     (126) expression -> expression . MINUS expression
     (127) expression -> expression . TIMES expression
@@ -6944,10 +6912,9 @@ state 264
     (105) case_item -> constant_list COLON statement_list .
     (75) statement_list -> statement_list . SEMI statement
 
-  ! shift/reduce conflict for SEMI resolved as shift
-    SEMI            shift and go to state 71
+    SEMI            reduce using rule 105 (case_item -> constant_list COLON statement_list .)
 
-  ! SEMI            [ reduce using rule 105 (case_item -> constant_list COLON statement_list .) ]
+  ! SEMI            [ shift and go to state 71 ]
 
 
 state 265
@@ -7487,36 +7454,3 @@ WARNING:
 WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for ELSE in state 179 resolved as shift
-WARNING: shift/reduce conflict for COLON in state 180 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 180 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 180 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 180 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 180 resolved as shift
-WARNING: shift/reduce conflict for DIV in state 180 resolved as shift
-WARNING: shift/reduce conflict for MOD in state 180 resolved as shift
-WARNING: shift/reduce conflict for EQ in state 180 resolved as shift
-WARNING: shift/reduce conflict for NE in state 180 resolved as shift
-WARNING: shift/reduce conflict for LT in state 180 resolved as shift
-WARNING: shift/reduce conflict for LE in state 180 resolved as shift
-WARNING: shift/reduce conflict for GT in state 180 resolved as shift
-WARNING: shift/reduce conflict for GE in state 180 resolved as shift
-WARNING: shift/reduce conflict for IN in state 180 resolved as shift
-WARNING: shift/reduce conflict for AND in state 180 resolved as shift
-WARNING: shift/reduce conflict for OR in state 180 resolved as shift
-WARNING: shift/reduce conflict for COLON in state 186 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 186 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 186 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 186 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 186 resolved as shift
-WARNING: shift/reduce conflict for DIV in state 186 resolved as shift
-WARNING: shift/reduce conflict for MOD in state 186 resolved as shift
-WARNING: shift/reduce conflict for EQ in state 186 resolved as shift
-WARNING: shift/reduce conflict for NE in state 186 resolved as shift
-WARNING: shift/reduce conflict for LT in state 186 resolved as shift
-WARNING: shift/reduce conflict for LE in state 186 resolved as shift
-WARNING: shift/reduce conflict for GT in state 186 resolved as shift
-WARNING: shift/reduce conflict for GE in state 186 resolved as shift
-WARNING: shift/reduce conflict for IN in state 186 resolved as shift
-WARNING: shift/reduce conflict for AND in state 186 resolved as shift
-WARNING: shift/reduce conflict for OR in state 186 resolved as shift
-WARNING: shift/reduce conflict for SEMI in state 264 resolved as shift

@@ -11,7 +11,8 @@ precedence = (
     ('right', 'NOT'),
     ('left', 'EQ', 'NE', 'LT', 'LE', 'GT', 'GE', 'IN'),
     ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE', 'DIV')
+    ('left', 'TIMES', 'DIVIDE', 'DIV', 'MOD'),
+    ('left', 'COLON')
 )
 
 # Programa
@@ -64,6 +65,10 @@ def p_const_declaration(p):
 def p_const_list(p):
     '''const_list : const_list CONST_ITEM SEMI
                   | CONST_ITEM SEMI'''
+    if len(p) == 3:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[2]]
 
 def p_CONST_ITEM(p):
     'CONST_ITEM : ID EQ expression'
@@ -254,9 +259,10 @@ def p_const_expr(p):
 def p_field_list(p):
     '''field_list : field_list var_item
                   | var_item'''
-    # reaproveita var_item para campos de record
-    items = [p[1]] if len(p)==3 else p[1] + [p[2]]
-    p[0] = items
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[2]]
 
 
 
@@ -491,8 +497,8 @@ def p_expression(p):
                   | ID LPAREN expression_list RPAREN
                   | LPAREN expression RPAREN
                   | LBRACKET expression_list RBRACKET
-                  | expression COLON expression 
                   | NOT expression
+                  | expression COLON expression
                   | expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
