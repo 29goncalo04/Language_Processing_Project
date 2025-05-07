@@ -25,7 +25,10 @@ def p_program(p):
 def p_program_params(p):
     '''program_params : LPAREN ID_LIST RPAREN
                       | empty'''
-    p[0] = p[1]
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[2]
 
 
 
@@ -146,43 +149,6 @@ def p_procedure_declaration(p):
 
 
 # Diferentes tipos
-# def p_type(p):
-#     '''type : PACKED type
-#             | TIPO LBRACKET constant RBRACKET
-#             | TIPO
-#             | ID
-#             | ARRAY OF type
-#             | ARRAY LBRACKET range_list RBRACKET OF type
-#             | LPAREN ID_LIST RPAREN            
-#             | constant RANGE constant   
-#             | RECORD field_list variant_part END      
-#             | RECORD field_list END
-#             | SET OF type                    
-#             | FILE OF type'''
-#     if isinstance(p[1], str) and len(p)==5 and p[2]=='[':
-#         p[0] = ('short_string', p[1], p[3])
-#         return
-#     if p[1].lower() == 'packed':
-#         p[0] = ('packed', p[2])
-#         return
-#     tok = p[1]
-#     if isinstance(tok, str) and tok.lower() == 'array' and p[2].lower() == 'of':
-#         p[0] = ('open_array', p[3])
-#         return
-#     if isinstance(tok, str) and tok.lower() == 'array':
-#         p[0] = ('array_type', p[3], p[5], p[8])
-#     elif tok == '(':
-#         p[0] = ('enum', p[2])
-#     elif isinstance(p[1], tuple) and p[2] == '..':
-#         p[0] = ('subrange', p[1], p[3])
-#     elif tok.lower() == 'record':
-#         p[0] = ('record', p[2], p[3] if len(p) > 4 else None)
-#     elif tok.lower() == 'set':
-#         p[0] = ('set', p[3])
-#     elif tok.lower() == 'file':
-#         p[0] = ('file', p[3])
-#     else:
-#         p[0] = ('simple_type', tok)
 def p_type(p):
     '''type : packed_type
             | short_string
@@ -194,28 +160,36 @@ def p_type(p):
             | set_type
             | file_type'''
     p[0] = p[1]
+
 def p_packed_type(p):
     'packed_type : PACKED type'
     p[0] = ('packed', p[2])
+
 def p_short_string(p):
     'short_string : TIPO LBRACKET constant RBRACKET'
     p[0] = ('short_string', p[1], p[3])
+
 def p_simple_type(p):
     '''simple_type : TIPO
                    | ID'''
     p[0] = ('simple_type', p[1])
+
 def p_array_type_open(p):
     'array_type : ARRAY OF type'
     p[0] = ('open_array', p[3])
+
 def p_array_type_range(p):
     'array_type : ARRAY LBRACKET range_list RBRACKET OF type'
     p[0] = ('array_type', p[3], p[6])
+
 def p_enum_type(p):
     'enum_type : LPAREN ID_LIST RPAREN'
     p[0] = ('enum', p[2])
+
 def p_subrange_type(p):
     'subrange_type : constant RANGE constant'
     p[0] = ('subrange', p[1], p[3])
+
 def p_record_type(p):
     '''record_type : RECORD field_list variant_part END
                    | RECORD field_list END'''
@@ -223,9 +197,11 @@ def p_record_type(p):
         p[0] = ('record', p[2], p[3])
     else:
         p[0] = ('record', p[2], None)
+
 def p_set_type(p):
     'set_type : SET OF type'
     p[0] = ('set', p[3])
+
 def p_file_type(p):
     'file_type : FILE OF type'
     p[0] = ('file', p[3])
@@ -276,8 +252,10 @@ def p_variant_part(p):
 def p_variant_list(p):
     '''variant_list : variant_list variant_item SEMI
                     | variant_item SEMI'''
-    if len(p)==3: p[0] = [p[1]]
-    else: p[0] = p[1] + [p[2]]
+    if len(p)==3: 
+        p[0] = [p[1]]
+    else: 
+        p[0] = p[1] + [p[2]]
 
 def p_variant_item(p):
     'variant_item : constant COLON LPAREN field_list RPAREN'
@@ -372,9 +350,9 @@ def p_assignment(p):
 
 # Variáveis
 def p_variable(p):
-    '''variable : ID LBRACKET expression RBRACKET
-                | ID 
-                | variable DOT ID'''
+    '''variable : variable LBRACKET expression_list RBRACKET
+                | variable DOT ID
+                | ID'''
     if len(p) == 2:
         p[0] = ('var', p[1])
     elif p[2] == '[':
@@ -411,7 +389,6 @@ def p_for_statement(p):
     '''for_statement : FOR ID ASSIGN expression TO expression DO statement
                      | FOR ID ASSIGN expression DOWNTO expression DO statement'''
     direction = 'to' if p[5].lower() == 'to' else 'downto'
-    # p[1]='FOR', p[2]=ID, p[4]=start, p[6]=end, p[8]=statement
     p[0] = ('for', p[2], p[4], p[6], direction, p[8])
 
 
@@ -438,8 +415,10 @@ def p_case_statement(p):
 def p_case_list(p):
     '''case_list : case_list case_item SEMI
                  | case_item SEMI'''
-    if len(p)==3: p[0]=[p[1]]
-    else: p[0]=p[1]+[p[2]]
+    if len(p)==3: 
+        p[0]=[p[1]]
+    else: 
+        p[0]=p[1]+[p[2]]
 
 def p_case_item(p):
     'case_item : constant_list COLON statement_list'
@@ -448,8 +427,10 @@ def p_case_item(p):
 def p_constant_list(p):
     '''constant_list : constant
                      | constant_list COMMA constant'''
-    if len(p)==2: p[0]=[p[1]]
-    else: p[0]=p[1]+[p[3]]
+    if len(p)==2: 
+        p[0]=[p[1]]
+    else: 
+        p[0]=p[1]+[p[3]]
 
 
 
@@ -461,8 +442,10 @@ def p_with_statement(p):
 def p_variable_list(p):
     '''variable_list : variable
                      | variable_list COMMA variable'''
-    if len(p)==2: p[0]=[p[1]]
-    else: p[0]=p[1]+[p[3]]
+    if len(p)==2: 
+        p[0]=[p[1]]
+    else: 
+        p[0]=p[1]+[p[3]]
 
 
 
@@ -487,7 +470,6 @@ def p_constant(p):
                 | BOOLEAN
                 | STRING
                 | NIL'''
-                # | ID
     p[0] = ('const', p[1])
 
 

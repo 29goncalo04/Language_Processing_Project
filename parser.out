@@ -93,9 +93,9 @@ Rule 87    statement -> labeled_statement
 Rule 88    statement -> compound
 Rule 89    statement -> empty
 Rule 90    assignment -> variable ASSIGN expression
-Rule 91    variable -> ID LBRACKET expression RBRACKET
-Rule 92    variable -> ID
-Rule 93    variable -> variable DOT ID
+Rule 91    variable -> variable LBRACKET expression_list RBRACKET
+Rule 92    variable -> variable DOT ID
+Rule 93    variable -> ID
 Rule 94    procedure_call -> ID LPAREN expression_list RPAREN
 Rule 95    procedure_call -> ID
 Rule 96    if_statement -> IF expression THEN statement ELSE statement
@@ -160,7 +160,7 @@ CONST                : 13 74
 DIV                  : 129
 DIVIDE               : 128
 DO                   : 98 99 100 108
-DOT                  : 1 93
+DOT                  : 1 92
 DOWNTO               : 99
 ELSE                 : 96
 END                  : 4 47 48 77 102
@@ -171,7 +171,7 @@ FUNCTION             : 28
 GE                   : 136
 GOTO                 : 111
 GT                   : 135
-ID                   : 1 16 20 28 29 42 58 62 66 67 91 92 93 94 95 98 99 120
+ID                   : 1 16 20 28 29 42 58 62 66 67 92 93 94 95 98 99 120
 IF                   : 96 97
 IN                   : 137
 INTEGER              : 22 23 54 111 112 113
@@ -231,8 +231,8 @@ declaration          : 5
 declarations         : 4 5
 empty                : 3 6 69 89
 enum_type            : 34
-expression           : 16 90 91 96 97 98 98 99 99 100 101 102 121 123 124 124 125 125 126 126 127 127 128 128 129 129 130 130 131 131 132 132 133 133 134 134 135 135 136 136 137 137 138 138 139 139 140 141
-expression_list      : 94 120 122 141
+expression           : 16 90 96 97 98 98 99 99 100 101 102 121 123 124 124 125 125 126 126 127 127 128 128 129 129 130 130 131 131 132 132 133 133 134 134 135 135 136 136 137 137 138 138 139 139 140 141
+expression_list      : 91 94 120 122 141
 field_list           : 47 48 60 65
 file_type            : 38
 for_statement        : 81
@@ -267,7 +267,7 @@ type_list            : 17 18
 var_declaration      : 10
 var_item             : 25 26 60 61
 var_list             : 24 25
-variable             : 90 93 109 110 118
+variable             : 90 91 92 109 110 118
 variable_list        : 108 110
 variant_item         : 63 64
 variant_list         : 62 63
@@ -480,9 +480,9 @@ state 16
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -708,9 +708,9 @@ state 31
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -882,27 +882,28 @@ state 45
 state 46
 
     (90) assignment -> variable . ASSIGN expression
-    (93) variable -> variable . DOT ID
+    (91) variable -> variable . LBRACKET expression_list RBRACKET
+    (92) variable -> variable . DOT ID
 
     ASSIGN          shift and go to state 72
-    DOT             shift and go to state 73
+    LBRACKET        shift and go to state 73
+    DOT             shift and go to state 74
 
 
 state 47
 
     (94) procedure_call -> ID . LPAREN expression_list RPAREN
     (95) procedure_call -> ID .
-    (91) variable -> ID . LBRACKET expression RBRACKET
-    (92) variable -> ID .
+    (93) variable -> ID .
 
-    LPAREN          shift and go to state 74
+    LPAREN          shift and go to state 75
     END             reduce using rule 95 (procedure_call -> ID .)
     SEMI            reduce using rule 95 (procedure_call -> ID .)
     UNTIL           reduce using rule 95 (procedure_call -> ID .)
     ELSE            reduce using rule 95 (procedure_call -> ID .)
-    LBRACKET        shift and go to state 75
-    ASSIGN          reduce using rule 92 (variable -> ID .)
-    DOT             reduce using rule 92 (variable -> ID .)
+    ASSIGN          reduce using rule 93 (variable -> ID .)
+    LBRACKET        reduce using rule 93 (variable -> ID .)
+    DOT             reduce using rule 93 (variable -> ID .)
 
 
 state 48
@@ -931,9 +932,9 @@ state 48
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -987,9 +988,9 @@ state 50
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1042,9 +1043,9 @@ state 51
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -1100,9 +1101,9 @@ state 52
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1128,9 +1129,9 @@ state 53
     (108) with_statement -> WITH . variable_list DO statement
     (109) variable_list -> . variable
     (110) variable_list -> . variable_list COMMA variable
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 94
 
@@ -1334,9 +1335,9 @@ state 71
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -1392,9 +1393,9 @@ state 72
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1417,12 +1418,63 @@ state 72
 
 state 73
 
-    (93) variable -> variable DOT . ID
+    (91) variable -> variable LBRACKET . expression_list RBRACKET
+    (140) expression_list -> . expression
+    (141) expression_list -> . expression_list COMMA expression
+    (118) expression -> . variable
+    (119) expression -> . constant
+    (120) expression -> . ID LPAREN expression_list RPAREN
+    (121) expression -> . LPAREN expression RPAREN
+    (122) expression -> . LBRACKET expression_list RBRACKET
+    (123) expression -> . NOT expression
+    (124) expression -> . expression COLON expression
+    (125) expression -> . expression PLUS expression
+    (126) expression -> . expression MINUS expression
+    (127) expression -> . expression TIMES expression
+    (128) expression -> . expression DIVIDE expression
+    (129) expression -> . expression DIV expression
+    (130) expression -> . expression MOD expression
+    (131) expression -> . expression EQ expression
+    (132) expression -> . expression NE expression
+    (133) expression -> . expression LT expression
+    (134) expression -> . expression LE expression
+    (135) expression -> . expression GT expression
+    (136) expression -> . expression GE expression
+    (137) expression -> . expression IN expression
+    (138) expression -> . expression AND expression
+    (139) expression -> . expression OR expression
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
+    (113) constant -> . INTEGER
+    (114) constant -> . REAL
+    (115) constant -> . BOOLEAN
+    (116) constant -> . STRING
+    (117) constant -> . NIL
 
-    ID              shift and go to state 112
+    ID              shift and go to state 79
+    LPAREN          shift and go to state 80
+    LBRACKET        shift and go to state 81
+    NOT             shift and go to state 82
+    INTEGER         shift and go to state 83
+    REAL            shift and go to state 84
+    BOOLEAN         shift and go to state 85
+    STRING          shift and go to state 86
+    NIL             shift and go to state 87
 
+    variable                       shift and go to state 77
+    expression_list                shift and go to state 112
+    expression                     shift and go to state 113
+    constant                       shift and go to state 78
 
 state 74
+
+    (92) variable -> variable DOT . ID
+
+    ID              shift and go to state 114
+
+
+state 75
 
     (94) procedure_call -> ID LPAREN . expression_list RPAREN
     (140) expression_list -> . expression
@@ -1449,9 +1501,9 @@ state 74
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1468,56 +1520,8 @@ state 74
     STRING          shift and go to state 86
     NIL             shift and go to state 87
 
-    expression_list                shift and go to state 113
-    expression                     shift and go to state 114
-    variable                       shift and go to state 77
-    constant                       shift and go to state 78
-
-state 75
-
-    (91) variable -> ID LBRACKET . expression RBRACKET
-    (118) expression -> . variable
-    (119) expression -> . constant
-    (120) expression -> . ID LPAREN expression_list RPAREN
-    (121) expression -> . LPAREN expression RPAREN
-    (122) expression -> . LBRACKET expression_list RBRACKET
-    (123) expression -> . NOT expression
-    (124) expression -> . expression COLON expression
-    (125) expression -> . expression PLUS expression
-    (126) expression -> . expression MINUS expression
-    (127) expression -> . expression TIMES expression
-    (128) expression -> . expression DIVIDE expression
-    (129) expression -> . expression DIV expression
-    (130) expression -> . expression MOD expression
-    (131) expression -> . expression EQ expression
-    (132) expression -> . expression NE expression
-    (133) expression -> . expression LT expression
-    (134) expression -> . expression LE expression
-    (135) expression -> . expression GT expression
-    (136) expression -> . expression GE expression
-    (137) expression -> . expression IN expression
-    (138) expression -> . expression AND expression
-    (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
-    (113) constant -> . INTEGER
-    (114) constant -> . REAL
-    (115) constant -> . BOOLEAN
-    (116) constant -> . STRING
-    (117) constant -> . NIL
-
-    ID              shift and go to state 79
-    LPAREN          shift and go to state 80
-    LBRACKET        shift and go to state 81
-    NOT             shift and go to state 82
-    INTEGER         shift and go to state 83
-    REAL            shift and go to state 84
-    BOOLEAN         shift and go to state 85
-    STRING          shift and go to state 86
-    NIL             shift and go to state 87
-
-    expression                     shift and go to state 115
+    expression_list                shift and go to state 115
+    expression                     shift and go to state 113
     variable                       shift and go to state 77
     constant                       shift and go to state 78
 
@@ -1564,7 +1568,8 @@ state 76
 state 77
 
     (118) expression -> variable .
-    (93) variable -> variable . DOT ID
+    (91) variable -> variable . LBRACKET expression_list RBRACKET
+    (92) variable -> variable . DOT ID
 
     THEN            reduce using rule 118 (expression -> variable .)
     COLON           reduce using rule 118 (expression -> variable .)
@@ -1589,12 +1594,13 @@ state 77
     SEMI            reduce using rule 118 (expression -> variable .)
     UNTIL           reduce using rule 118 (expression -> variable .)
     ELSE            reduce using rule 118 (expression -> variable .)
-    RPAREN          reduce using rule 118 (expression -> variable .)
-    COMMA           reduce using rule 118 (expression -> variable .)
     RBRACKET        reduce using rule 118 (expression -> variable .)
+    COMMA           reduce using rule 118 (expression -> variable .)
+    RPAREN          reduce using rule 118 (expression -> variable .)
     TO              reduce using rule 118 (expression -> variable .)
     DOWNTO          reduce using rule 118 (expression -> variable .)
-    DOT             shift and go to state 73
+    LBRACKET        shift and go to state 73
+    DOT             shift and go to state 74
 
 
 state 78
@@ -1624,9 +1630,9 @@ state 78
     SEMI            reduce using rule 119 (expression -> constant .)
     UNTIL           reduce using rule 119 (expression -> constant .)
     ELSE            reduce using rule 119 (expression -> constant .)
-    RPAREN          reduce using rule 119 (expression -> constant .)
-    COMMA           reduce using rule 119 (expression -> constant .)
     RBRACKET        reduce using rule 119 (expression -> constant .)
+    COMMA           reduce using rule 119 (expression -> constant .)
+    RPAREN          reduce using rule 119 (expression -> constant .)
     TO              reduce using rule 119 (expression -> constant .)
     DOWNTO          reduce using rule 119 (expression -> constant .)
 
@@ -1634,40 +1640,39 @@ state 78
 state 79
 
     (120) expression -> ID . LPAREN expression_list RPAREN
-    (91) variable -> ID . LBRACKET expression RBRACKET
-    (92) variable -> ID .
+    (93) variable -> ID .
 
     LPAREN          shift and go to state 133
-    LBRACKET        shift and go to state 75
-    DOT             reduce using rule 92 (variable -> ID .)
-    THEN            reduce using rule 92 (variable -> ID .)
-    COLON           reduce using rule 92 (variable -> ID .)
-    PLUS            reduce using rule 92 (variable -> ID .)
-    MINUS           reduce using rule 92 (variable -> ID .)
-    TIMES           reduce using rule 92 (variable -> ID .)
-    DIVIDE          reduce using rule 92 (variable -> ID .)
-    DIV             reduce using rule 92 (variable -> ID .)
-    MOD             reduce using rule 92 (variable -> ID .)
-    EQ              reduce using rule 92 (variable -> ID .)
-    NE              reduce using rule 92 (variable -> ID .)
-    LT              reduce using rule 92 (variable -> ID .)
-    LE              reduce using rule 92 (variable -> ID .)
-    GT              reduce using rule 92 (variable -> ID .)
-    GE              reduce using rule 92 (variable -> ID .)
-    IN              reduce using rule 92 (variable -> ID .)
-    AND             reduce using rule 92 (variable -> ID .)
-    OR              reduce using rule 92 (variable -> ID .)
-    DO              reduce using rule 92 (variable -> ID .)
-    OF              reduce using rule 92 (variable -> ID .)
-    END             reduce using rule 92 (variable -> ID .)
-    SEMI            reduce using rule 92 (variable -> ID .)
-    UNTIL           reduce using rule 92 (variable -> ID .)
-    ELSE            reduce using rule 92 (variable -> ID .)
-    RPAREN          reduce using rule 92 (variable -> ID .)
-    COMMA           reduce using rule 92 (variable -> ID .)
-    RBRACKET        reduce using rule 92 (variable -> ID .)
-    TO              reduce using rule 92 (variable -> ID .)
-    DOWNTO          reduce using rule 92 (variable -> ID .)
+    LBRACKET        reduce using rule 93 (variable -> ID .)
+    DOT             reduce using rule 93 (variable -> ID .)
+    THEN            reduce using rule 93 (variable -> ID .)
+    COLON           reduce using rule 93 (variable -> ID .)
+    PLUS            reduce using rule 93 (variable -> ID .)
+    MINUS           reduce using rule 93 (variable -> ID .)
+    TIMES           reduce using rule 93 (variable -> ID .)
+    DIVIDE          reduce using rule 93 (variable -> ID .)
+    DIV             reduce using rule 93 (variable -> ID .)
+    MOD             reduce using rule 93 (variable -> ID .)
+    EQ              reduce using rule 93 (variable -> ID .)
+    NE              reduce using rule 93 (variable -> ID .)
+    LT              reduce using rule 93 (variable -> ID .)
+    LE              reduce using rule 93 (variable -> ID .)
+    GT              reduce using rule 93 (variable -> ID .)
+    GE              reduce using rule 93 (variable -> ID .)
+    IN              reduce using rule 93 (variable -> ID .)
+    AND             reduce using rule 93 (variable -> ID .)
+    OR              reduce using rule 93 (variable -> ID .)
+    DO              reduce using rule 93 (variable -> ID .)
+    OF              reduce using rule 93 (variable -> ID .)
+    END             reduce using rule 93 (variable -> ID .)
+    SEMI            reduce using rule 93 (variable -> ID .)
+    UNTIL           reduce using rule 93 (variable -> ID .)
+    ELSE            reduce using rule 93 (variable -> ID .)
+    RBRACKET        reduce using rule 93 (variable -> ID .)
+    COMMA           reduce using rule 93 (variable -> ID .)
+    RPAREN          reduce using rule 93 (variable -> ID .)
+    TO              reduce using rule 93 (variable -> ID .)
+    DOWNTO          reduce using rule 93 (variable -> ID .)
 
 
 state 80
@@ -1695,9 +1700,9 @@ state 80
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1745,9 +1750,9 @@ state 81
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1765,7 +1770,7 @@ state 81
     NIL             shift and go to state 87
 
     expression_list                shift and go to state 135
-    expression                     shift and go to state 114
+    expression                     shift and go to state 113
     variable                       shift and go to state 77
     constant                       shift and go to state 78
 
@@ -1794,9 +1799,9 @@ state 82
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -1844,9 +1849,9 @@ state 83
     SEMI            reduce using rule 113 (constant -> INTEGER .)
     UNTIL           reduce using rule 113 (constant -> INTEGER .)
     ELSE            reduce using rule 113 (constant -> INTEGER .)
-    RPAREN          reduce using rule 113 (constant -> INTEGER .)
-    COMMA           reduce using rule 113 (constant -> INTEGER .)
     RBRACKET        reduce using rule 113 (constant -> INTEGER .)
+    COMMA           reduce using rule 113 (constant -> INTEGER .)
+    RPAREN          reduce using rule 113 (constant -> INTEGER .)
     TO              reduce using rule 113 (constant -> INTEGER .)
     DOWNTO          reduce using rule 113 (constant -> INTEGER .)
     RANGE           reduce using rule 113 (constant -> INTEGER .)
@@ -1879,9 +1884,9 @@ state 84
     SEMI            reduce using rule 114 (constant -> REAL .)
     UNTIL           reduce using rule 114 (constant -> REAL .)
     ELSE            reduce using rule 114 (constant -> REAL .)
-    RPAREN          reduce using rule 114 (constant -> REAL .)
-    COMMA           reduce using rule 114 (constant -> REAL .)
     RBRACKET        reduce using rule 114 (constant -> REAL .)
+    COMMA           reduce using rule 114 (constant -> REAL .)
+    RPAREN          reduce using rule 114 (constant -> REAL .)
     TO              reduce using rule 114 (constant -> REAL .)
     DOWNTO          reduce using rule 114 (constant -> REAL .)
     RANGE           reduce using rule 114 (constant -> REAL .)
@@ -1914,9 +1919,9 @@ state 85
     SEMI            reduce using rule 115 (constant -> BOOLEAN .)
     UNTIL           reduce using rule 115 (constant -> BOOLEAN .)
     ELSE            reduce using rule 115 (constant -> BOOLEAN .)
-    RPAREN          reduce using rule 115 (constant -> BOOLEAN .)
-    COMMA           reduce using rule 115 (constant -> BOOLEAN .)
     RBRACKET        reduce using rule 115 (constant -> BOOLEAN .)
+    COMMA           reduce using rule 115 (constant -> BOOLEAN .)
+    RPAREN          reduce using rule 115 (constant -> BOOLEAN .)
     TO              reduce using rule 115 (constant -> BOOLEAN .)
     DOWNTO          reduce using rule 115 (constant -> BOOLEAN .)
     RANGE           reduce using rule 115 (constant -> BOOLEAN .)
@@ -1949,9 +1954,9 @@ state 86
     SEMI            reduce using rule 116 (constant -> STRING .)
     UNTIL           reduce using rule 116 (constant -> STRING .)
     ELSE            reduce using rule 116 (constant -> STRING .)
-    RPAREN          reduce using rule 116 (constant -> STRING .)
-    COMMA           reduce using rule 116 (constant -> STRING .)
     RBRACKET        reduce using rule 116 (constant -> STRING .)
+    COMMA           reduce using rule 116 (constant -> STRING .)
+    RPAREN          reduce using rule 116 (constant -> STRING .)
     TO              reduce using rule 116 (constant -> STRING .)
     DOWNTO          reduce using rule 116 (constant -> STRING .)
     RANGE           reduce using rule 116 (constant -> STRING .)
@@ -1984,9 +1989,9 @@ state 87
     SEMI            reduce using rule 117 (constant -> NIL .)
     UNTIL           reduce using rule 117 (constant -> NIL .)
     ELSE            reduce using rule 117 (constant -> NIL .)
-    RPAREN          reduce using rule 117 (constant -> NIL .)
-    COMMA           reduce using rule 117 (constant -> NIL .)
     RBRACKET        reduce using rule 117 (constant -> NIL .)
+    COMMA           reduce using rule 117 (constant -> NIL .)
+    RPAREN          reduce using rule 117 (constant -> NIL .)
     TO              reduce using rule 117 (constant -> NIL .)
     DOWNTO          reduce using rule 117 (constant -> NIL .)
     RANGE           reduce using rule 117 (constant -> NIL .)
@@ -2099,22 +2104,23 @@ state 92
 state 93
 
     (109) variable_list -> variable .
-    (93) variable -> variable . DOT ID
+    (91) variable -> variable . LBRACKET expression_list RBRACKET
+    (92) variable -> variable . DOT ID
 
     DO              reduce using rule 109 (variable_list -> variable .)
     COMMA           reduce using rule 109 (variable_list -> variable .)
-    DOT             shift and go to state 73
+    LBRACKET        shift and go to state 73
+    DOT             shift and go to state 74
 
 
 state 94
 
-    (91) variable -> ID . LBRACKET expression RBRACKET
-    (92) variable -> ID .
+    (93) variable -> ID .
 
-    LBRACKET        shift and go to state 75
-    DOT             reduce using rule 92 (variable -> ID .)
-    DO              reduce using rule 92 (variable -> ID .)
-    COMMA           reduce using rule 92 (variable -> ID .)
+    LBRACKET        reduce using rule 93 (variable -> ID .)
+    DOT             reduce using rule 93 (variable -> ID .)
+    DO              reduce using rule 93 (variable -> ID .)
+    COMMA           reduce using rule 93 (variable -> ID .)
 
 
 state 95
@@ -2157,9 +2163,9 @@ state 96
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -2237,9 +2243,9 @@ state 99
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2540,50 +2546,14 @@ state 111
 
 state 112
 
-    (93) variable -> variable DOT ID .
-
-    ASSIGN          reduce using rule 93 (variable -> variable DOT ID .)
-    DOT             reduce using rule 93 (variable -> variable DOT ID .)
-    THEN            reduce using rule 93 (variable -> variable DOT ID .)
-    COLON           reduce using rule 93 (variable -> variable DOT ID .)
-    PLUS            reduce using rule 93 (variable -> variable DOT ID .)
-    MINUS           reduce using rule 93 (variable -> variable DOT ID .)
-    TIMES           reduce using rule 93 (variable -> variable DOT ID .)
-    DIVIDE          reduce using rule 93 (variable -> variable DOT ID .)
-    DIV             reduce using rule 93 (variable -> variable DOT ID .)
-    MOD             reduce using rule 93 (variable -> variable DOT ID .)
-    EQ              reduce using rule 93 (variable -> variable DOT ID .)
-    NE              reduce using rule 93 (variable -> variable DOT ID .)
-    LT              reduce using rule 93 (variable -> variable DOT ID .)
-    LE              reduce using rule 93 (variable -> variable DOT ID .)
-    GT              reduce using rule 93 (variable -> variable DOT ID .)
-    GE              reduce using rule 93 (variable -> variable DOT ID .)
-    IN              reduce using rule 93 (variable -> variable DOT ID .)
-    AND             reduce using rule 93 (variable -> variable DOT ID .)
-    OR              reduce using rule 93 (variable -> variable DOT ID .)
-    DO              reduce using rule 93 (variable -> variable DOT ID .)
-    OF              reduce using rule 93 (variable -> variable DOT ID .)
-    COMMA           reduce using rule 93 (variable -> variable DOT ID .)
-    END             reduce using rule 93 (variable -> variable DOT ID .)
-    SEMI            reduce using rule 93 (variable -> variable DOT ID .)
-    UNTIL           reduce using rule 93 (variable -> variable DOT ID .)
-    ELSE            reduce using rule 93 (variable -> variable DOT ID .)
-    RPAREN          reduce using rule 93 (variable -> variable DOT ID .)
-    RBRACKET        reduce using rule 93 (variable -> variable DOT ID .)
-    TO              reduce using rule 93 (variable -> variable DOT ID .)
-    DOWNTO          reduce using rule 93 (variable -> variable DOT ID .)
-
-
-state 113
-
-    (94) procedure_call -> ID LPAREN expression_list . RPAREN
+    (91) variable -> variable LBRACKET expression_list . RBRACKET
     (141) expression_list -> expression_list . COMMA expression
 
-    RPAREN          shift and go to state 176
+    RBRACKET        shift and go to state 176
     COMMA           shift and go to state 177
 
 
-state 114
+state 113
 
     (140) expression_list -> expression .
     (124) expression -> expression . COLON expression
@@ -2603,9 +2573,9 @@ state 114
     (138) expression -> expression . AND expression
     (139) expression -> expression . OR expression
 
-    RPAREN          reduce using rule 140 (expression_list -> expression .)
-    COMMA           reduce using rule 140 (expression_list -> expression .)
     RBRACKET        reduce using rule 140 (expression_list -> expression .)
+    COMMA           reduce using rule 140 (expression_list -> expression .)
+    RPAREN          reduce using rule 140 (expression_list -> expression .)
     COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
@@ -2622,45 +2592,52 @@ state 114
     IN              shift and go to state 130
     AND             shift and go to state 131
     OR              shift and go to state 132
+
+
+state 114
+
+    (92) variable -> variable DOT ID .
+
+    ASSIGN          reduce using rule 92 (variable -> variable DOT ID .)
+    LBRACKET        reduce using rule 92 (variable -> variable DOT ID .)
+    DOT             reduce using rule 92 (variable -> variable DOT ID .)
+    THEN            reduce using rule 92 (variable -> variable DOT ID .)
+    COLON           reduce using rule 92 (variable -> variable DOT ID .)
+    PLUS            reduce using rule 92 (variable -> variable DOT ID .)
+    MINUS           reduce using rule 92 (variable -> variable DOT ID .)
+    TIMES           reduce using rule 92 (variable -> variable DOT ID .)
+    DIVIDE          reduce using rule 92 (variable -> variable DOT ID .)
+    DIV             reduce using rule 92 (variable -> variable DOT ID .)
+    MOD             reduce using rule 92 (variable -> variable DOT ID .)
+    EQ              reduce using rule 92 (variable -> variable DOT ID .)
+    NE              reduce using rule 92 (variable -> variable DOT ID .)
+    LT              reduce using rule 92 (variable -> variable DOT ID .)
+    LE              reduce using rule 92 (variable -> variable DOT ID .)
+    GT              reduce using rule 92 (variable -> variable DOT ID .)
+    GE              reduce using rule 92 (variable -> variable DOT ID .)
+    IN              reduce using rule 92 (variable -> variable DOT ID .)
+    AND             reduce using rule 92 (variable -> variable DOT ID .)
+    OR              reduce using rule 92 (variable -> variable DOT ID .)
+    DO              reduce using rule 92 (variable -> variable DOT ID .)
+    OF              reduce using rule 92 (variable -> variable DOT ID .)
+    COMMA           reduce using rule 92 (variable -> variable DOT ID .)
+    END             reduce using rule 92 (variable -> variable DOT ID .)
+    SEMI            reduce using rule 92 (variable -> variable DOT ID .)
+    UNTIL           reduce using rule 92 (variable -> variable DOT ID .)
+    ELSE            reduce using rule 92 (variable -> variable DOT ID .)
+    RBRACKET        reduce using rule 92 (variable -> variable DOT ID .)
+    RPAREN          reduce using rule 92 (variable -> variable DOT ID .)
+    TO              reduce using rule 92 (variable -> variable DOT ID .)
+    DOWNTO          reduce using rule 92 (variable -> variable DOT ID .)
 
 
 state 115
 
-    (91) variable -> ID LBRACKET expression . RBRACKET
-    (124) expression -> expression . COLON expression
-    (125) expression -> expression . PLUS expression
-    (126) expression -> expression . MINUS expression
-    (127) expression -> expression . TIMES expression
-    (128) expression -> expression . DIVIDE expression
-    (129) expression -> expression . DIV expression
-    (130) expression -> expression . MOD expression
-    (131) expression -> expression . EQ expression
-    (132) expression -> expression . NE expression
-    (133) expression -> expression . LT expression
-    (134) expression -> expression . LE expression
-    (135) expression -> expression . GT expression
-    (136) expression -> expression . GE expression
-    (137) expression -> expression . IN expression
-    (138) expression -> expression . AND expression
-    (139) expression -> expression . OR expression
+    (94) procedure_call -> ID LPAREN expression_list . RPAREN
+    (141) expression_list -> expression_list . COMMA expression
 
-    RBRACKET        shift and go to state 178
-    COLON           shift and go to state 117
-    PLUS            shift and go to state 118
-    MINUS           shift and go to state 119
-    TIMES           shift and go to state 120
-    DIVIDE          shift and go to state 121
-    DIV             shift and go to state 122
-    MOD             shift and go to state 123
-    EQ              shift and go to state 124
-    NE              shift and go to state 125
-    LT              shift and go to state 126
-    LE              shift and go to state 127
-    GT              shift and go to state 128
-    GE              shift and go to state 129
-    IN              shift and go to state 130
-    AND             shift and go to state 131
-    OR              shift and go to state 132
+    RPAREN          shift and go to state 178
+    COMMA           shift and go to state 177
 
 
 state 116
@@ -2694,9 +2671,9 @@ state 116
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -2753,9 +2730,9 @@ state 117
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2801,9 +2778,9 @@ state 118
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2849,9 +2826,9 @@ state 119
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2897,9 +2874,9 @@ state 120
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2945,9 +2922,9 @@ state 121
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -2993,9 +2970,9 @@ state 122
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3041,9 +3018,9 @@ state 123
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3089,9 +3066,9 @@ state 124
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3137,9 +3114,9 @@ state 125
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3185,9 +3162,9 @@ state 126
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3233,9 +3210,9 @@ state 127
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3281,9 +3258,9 @@ state 128
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3329,9 +3306,9 @@ state 129
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3377,9 +3354,9 @@ state 130
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3425,9 +3402,9 @@ state 131
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3473,9 +3450,9 @@ state 132
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3523,9 +3500,9 @@ state 133
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3543,7 +3520,7 @@ state 133
     NIL             shift and go to state 87
 
     expression_list                shift and go to state 196
-    expression                     shift and go to state 114
+    expression                     shift and go to state 113
     variable                       shift and go to state 77
     constant                       shift and go to state 78
 
@@ -3624,9 +3601,9 @@ state 136
     SEMI            reduce using rule 123 (expression -> NOT expression .)
     UNTIL           reduce using rule 123 (expression -> NOT expression .)
     ELSE            reduce using rule 123 (expression -> NOT expression .)
-    RPAREN          reduce using rule 123 (expression -> NOT expression .)
-    COMMA           reduce using rule 123 (expression -> NOT expression .)
     RBRACKET        reduce using rule 123 (expression -> NOT expression .)
+    COMMA           reduce using rule 123 (expression -> NOT expression .)
+    RPAREN          reduce using rule 123 (expression -> NOT expression .)
     TO              reduce using rule 123 (expression -> NOT expression .)
     DOWNTO          reduce using rule 123 (expression -> NOT expression .)
     COLON           shift and go to state 117
@@ -3688,9 +3665,9 @@ state 137
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3741,9 +3718,9 @@ state 138
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -3800,9 +3777,9 @@ state 139
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -3878,9 +3855,9 @@ state 141
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -3915,9 +3892,9 @@ state 141
 state 142
 
     (110) variable_list -> variable_list COMMA . variable
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 94
 
@@ -4293,12 +4270,39 @@ state 175
 
 state 176
 
-    (94) procedure_call -> ID LPAREN expression_list RPAREN .
+    (91) variable -> variable LBRACKET expression_list RBRACKET .
 
-    END             reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
-    SEMI            reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
-    UNTIL           reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
-    ELSE            reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
+    ASSIGN          reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    LBRACKET        reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    DOT             reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    THEN            reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    COLON           reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    PLUS            reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    MINUS           reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    TIMES           reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    DIVIDE          reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    DIV             reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    MOD             reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    EQ              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    NE              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    LT              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    LE              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    GT              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    GE              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    IN              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    AND             reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    OR              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    DO              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    OF              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    COMMA           reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    END             reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    SEMI            reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    UNTIL           reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    ELSE            reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    RBRACKET        reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    RPAREN          reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    TO              reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
+    DOWNTO          reduce using rule 91 (variable -> variable LBRACKET expression_list RBRACKET .)
 
 
 state 177
@@ -4326,9 +4330,9 @@ state 177
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -4351,38 +4355,12 @@ state 177
 
 state 178
 
-    (91) variable -> ID LBRACKET expression RBRACKET .
+    (94) procedure_call -> ID LPAREN expression_list RPAREN .
 
-    ASSIGN          reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    DOT             reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    THEN            reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    COLON           reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    PLUS            reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    MINUS           reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    TIMES           reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    DIVIDE          reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    DIV             reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    MOD             reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    EQ              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    NE              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    LT              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    LE              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    GT              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    GE              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    IN              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    AND             reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    OR              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    DO              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    OF              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    COMMA           reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    END             reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    SEMI            reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    UNTIL           reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    ELSE            reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    RPAREN          reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    RBRACKET        reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    TO              reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
-    DOWNTO          reduce using rule 91 (variable -> ID LBRACKET expression RBRACKET .)
+    END             reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
+    SEMI            reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
+    UNTIL           reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
+    ELSE            reduce using rule 94 (procedure_call -> ID LPAREN expression_list RPAREN .)
 
 
 state 179
@@ -4441,9 +4419,9 @@ state 180
     SEMI            reduce using rule 124 (expression -> expression COLON expression .)
     UNTIL           reduce using rule 124 (expression -> expression COLON expression .)
     ELSE            reduce using rule 124 (expression -> expression COLON expression .)
-    RPAREN          reduce using rule 124 (expression -> expression COLON expression .)
-    COMMA           reduce using rule 124 (expression -> expression COLON expression .)
     RBRACKET        reduce using rule 124 (expression -> expression COLON expression .)
+    COMMA           reduce using rule 124 (expression -> expression COLON expression .)
+    RPAREN          reduce using rule 124 (expression -> expression COLON expression .)
     TO              reduce using rule 124 (expression -> expression COLON expression .)
     DOWNTO          reduce using rule 124 (expression -> expression COLON expression .)
 
@@ -4503,9 +4481,9 @@ state 181
     SEMI            reduce using rule 125 (expression -> expression PLUS expression .)
     UNTIL           reduce using rule 125 (expression -> expression PLUS expression .)
     ELSE            reduce using rule 125 (expression -> expression PLUS expression .)
-    RPAREN          reduce using rule 125 (expression -> expression PLUS expression .)
-    COMMA           reduce using rule 125 (expression -> expression PLUS expression .)
     RBRACKET        reduce using rule 125 (expression -> expression PLUS expression .)
+    COMMA           reduce using rule 125 (expression -> expression PLUS expression .)
+    RPAREN          reduce using rule 125 (expression -> expression PLUS expression .)
     TO              reduce using rule 125 (expression -> expression PLUS expression .)
     DOWNTO          reduce using rule 125 (expression -> expression PLUS expression .)
     COLON           shift and go to state 117
@@ -4570,9 +4548,9 @@ state 182
     SEMI            reduce using rule 126 (expression -> expression MINUS expression .)
     UNTIL           reduce using rule 126 (expression -> expression MINUS expression .)
     ELSE            reduce using rule 126 (expression -> expression MINUS expression .)
-    RPAREN          reduce using rule 126 (expression -> expression MINUS expression .)
-    COMMA           reduce using rule 126 (expression -> expression MINUS expression .)
     RBRACKET        reduce using rule 126 (expression -> expression MINUS expression .)
+    COMMA           reduce using rule 126 (expression -> expression MINUS expression .)
+    RPAREN          reduce using rule 126 (expression -> expression MINUS expression .)
     TO              reduce using rule 126 (expression -> expression MINUS expression .)
     DOWNTO          reduce using rule 126 (expression -> expression MINUS expression .)
     COLON           shift and go to state 117
@@ -4641,9 +4619,9 @@ state 183
     SEMI            reduce using rule 127 (expression -> expression TIMES expression .)
     UNTIL           reduce using rule 127 (expression -> expression TIMES expression .)
     ELSE            reduce using rule 127 (expression -> expression TIMES expression .)
-    RPAREN          reduce using rule 127 (expression -> expression TIMES expression .)
-    COMMA           reduce using rule 127 (expression -> expression TIMES expression .)
     RBRACKET        reduce using rule 127 (expression -> expression TIMES expression .)
+    COMMA           reduce using rule 127 (expression -> expression TIMES expression .)
+    RPAREN          reduce using rule 127 (expression -> expression TIMES expression .)
     TO              reduce using rule 127 (expression -> expression TIMES expression .)
     DOWNTO          reduce using rule 127 (expression -> expression TIMES expression .)
     COLON           shift and go to state 117
@@ -4708,9 +4686,9 @@ state 184
     SEMI            reduce using rule 128 (expression -> expression DIVIDE expression .)
     UNTIL           reduce using rule 128 (expression -> expression DIVIDE expression .)
     ELSE            reduce using rule 128 (expression -> expression DIVIDE expression .)
-    RPAREN          reduce using rule 128 (expression -> expression DIVIDE expression .)
-    COMMA           reduce using rule 128 (expression -> expression DIVIDE expression .)
     RBRACKET        reduce using rule 128 (expression -> expression DIVIDE expression .)
+    COMMA           reduce using rule 128 (expression -> expression DIVIDE expression .)
+    RPAREN          reduce using rule 128 (expression -> expression DIVIDE expression .)
     TO              reduce using rule 128 (expression -> expression DIVIDE expression .)
     DOWNTO          reduce using rule 128 (expression -> expression DIVIDE expression .)
     COLON           shift and go to state 117
@@ -4775,9 +4753,9 @@ state 185
     SEMI            reduce using rule 129 (expression -> expression DIV expression .)
     UNTIL           reduce using rule 129 (expression -> expression DIV expression .)
     ELSE            reduce using rule 129 (expression -> expression DIV expression .)
-    RPAREN          reduce using rule 129 (expression -> expression DIV expression .)
-    COMMA           reduce using rule 129 (expression -> expression DIV expression .)
     RBRACKET        reduce using rule 129 (expression -> expression DIV expression .)
+    COMMA           reduce using rule 129 (expression -> expression DIV expression .)
+    RPAREN          reduce using rule 129 (expression -> expression DIV expression .)
     TO              reduce using rule 129 (expression -> expression DIV expression .)
     DOWNTO          reduce using rule 129 (expression -> expression DIV expression .)
     COLON           shift and go to state 117
@@ -4842,9 +4820,9 @@ state 186
     SEMI            reduce using rule 130 (expression -> expression MOD expression .)
     UNTIL           reduce using rule 130 (expression -> expression MOD expression .)
     ELSE            reduce using rule 130 (expression -> expression MOD expression .)
-    RPAREN          reduce using rule 130 (expression -> expression MOD expression .)
-    COMMA           reduce using rule 130 (expression -> expression MOD expression .)
     RBRACKET        reduce using rule 130 (expression -> expression MOD expression .)
+    COMMA           reduce using rule 130 (expression -> expression MOD expression .)
+    RPAREN          reduce using rule 130 (expression -> expression MOD expression .)
     TO              reduce using rule 130 (expression -> expression MOD expression .)
     DOWNTO          reduce using rule 130 (expression -> expression MOD expression .)
     COLON           shift and go to state 117
@@ -4903,9 +4881,9 @@ state 187
     SEMI            reduce using rule 131 (expression -> expression EQ expression .)
     UNTIL           reduce using rule 131 (expression -> expression EQ expression .)
     ELSE            reduce using rule 131 (expression -> expression EQ expression .)
-    RPAREN          reduce using rule 131 (expression -> expression EQ expression .)
-    COMMA           reduce using rule 131 (expression -> expression EQ expression .)
     RBRACKET        reduce using rule 131 (expression -> expression EQ expression .)
+    COMMA           reduce using rule 131 (expression -> expression EQ expression .)
+    RPAREN          reduce using rule 131 (expression -> expression EQ expression .)
     TO              reduce using rule 131 (expression -> expression EQ expression .)
     DOWNTO          reduce using rule 131 (expression -> expression EQ expression .)
     COLON           shift and go to state 117
@@ -4970,9 +4948,9 @@ state 188
     SEMI            reduce using rule 132 (expression -> expression NE expression .)
     UNTIL           reduce using rule 132 (expression -> expression NE expression .)
     ELSE            reduce using rule 132 (expression -> expression NE expression .)
-    RPAREN          reduce using rule 132 (expression -> expression NE expression .)
-    COMMA           reduce using rule 132 (expression -> expression NE expression .)
     RBRACKET        reduce using rule 132 (expression -> expression NE expression .)
+    COMMA           reduce using rule 132 (expression -> expression NE expression .)
+    RPAREN          reduce using rule 132 (expression -> expression NE expression .)
     TO              reduce using rule 132 (expression -> expression NE expression .)
     DOWNTO          reduce using rule 132 (expression -> expression NE expression .)
     COLON           shift and go to state 117
@@ -5037,9 +5015,9 @@ state 189
     SEMI            reduce using rule 133 (expression -> expression LT expression .)
     UNTIL           reduce using rule 133 (expression -> expression LT expression .)
     ELSE            reduce using rule 133 (expression -> expression LT expression .)
-    RPAREN          reduce using rule 133 (expression -> expression LT expression .)
-    COMMA           reduce using rule 133 (expression -> expression LT expression .)
     RBRACKET        reduce using rule 133 (expression -> expression LT expression .)
+    COMMA           reduce using rule 133 (expression -> expression LT expression .)
+    RPAREN          reduce using rule 133 (expression -> expression LT expression .)
     TO              reduce using rule 133 (expression -> expression LT expression .)
     DOWNTO          reduce using rule 133 (expression -> expression LT expression .)
     COLON           shift and go to state 117
@@ -5104,9 +5082,9 @@ state 190
     SEMI            reduce using rule 134 (expression -> expression LE expression .)
     UNTIL           reduce using rule 134 (expression -> expression LE expression .)
     ELSE            reduce using rule 134 (expression -> expression LE expression .)
-    RPAREN          reduce using rule 134 (expression -> expression LE expression .)
-    COMMA           reduce using rule 134 (expression -> expression LE expression .)
     RBRACKET        reduce using rule 134 (expression -> expression LE expression .)
+    COMMA           reduce using rule 134 (expression -> expression LE expression .)
+    RPAREN          reduce using rule 134 (expression -> expression LE expression .)
     TO              reduce using rule 134 (expression -> expression LE expression .)
     DOWNTO          reduce using rule 134 (expression -> expression LE expression .)
     COLON           shift and go to state 117
@@ -5171,9 +5149,9 @@ state 191
     SEMI            reduce using rule 135 (expression -> expression GT expression .)
     UNTIL           reduce using rule 135 (expression -> expression GT expression .)
     ELSE            reduce using rule 135 (expression -> expression GT expression .)
-    RPAREN          reduce using rule 135 (expression -> expression GT expression .)
-    COMMA           reduce using rule 135 (expression -> expression GT expression .)
     RBRACKET        reduce using rule 135 (expression -> expression GT expression .)
+    COMMA           reduce using rule 135 (expression -> expression GT expression .)
+    RPAREN          reduce using rule 135 (expression -> expression GT expression .)
     TO              reduce using rule 135 (expression -> expression GT expression .)
     DOWNTO          reduce using rule 135 (expression -> expression GT expression .)
     COLON           shift and go to state 117
@@ -5238,9 +5216,9 @@ state 192
     SEMI            reduce using rule 136 (expression -> expression GE expression .)
     UNTIL           reduce using rule 136 (expression -> expression GE expression .)
     ELSE            reduce using rule 136 (expression -> expression GE expression .)
-    RPAREN          reduce using rule 136 (expression -> expression GE expression .)
-    COMMA           reduce using rule 136 (expression -> expression GE expression .)
     RBRACKET        reduce using rule 136 (expression -> expression GE expression .)
+    COMMA           reduce using rule 136 (expression -> expression GE expression .)
+    RPAREN          reduce using rule 136 (expression -> expression GE expression .)
     TO              reduce using rule 136 (expression -> expression GE expression .)
     DOWNTO          reduce using rule 136 (expression -> expression GE expression .)
     COLON           shift and go to state 117
@@ -5305,9 +5283,9 @@ state 193
     SEMI            reduce using rule 137 (expression -> expression IN expression .)
     UNTIL           reduce using rule 137 (expression -> expression IN expression .)
     ELSE            reduce using rule 137 (expression -> expression IN expression .)
-    RPAREN          reduce using rule 137 (expression -> expression IN expression .)
-    COMMA           reduce using rule 137 (expression -> expression IN expression .)
     RBRACKET        reduce using rule 137 (expression -> expression IN expression .)
+    COMMA           reduce using rule 137 (expression -> expression IN expression .)
+    RPAREN          reduce using rule 137 (expression -> expression IN expression .)
     TO              reduce using rule 137 (expression -> expression IN expression .)
     DOWNTO          reduce using rule 137 (expression -> expression IN expression .)
     COLON           shift and go to state 117
@@ -5365,9 +5343,9 @@ state 194
     SEMI            reduce using rule 138 (expression -> expression AND expression .)
     UNTIL           reduce using rule 138 (expression -> expression AND expression .)
     ELSE            reduce using rule 138 (expression -> expression AND expression .)
-    RPAREN          reduce using rule 138 (expression -> expression AND expression .)
-    COMMA           reduce using rule 138 (expression -> expression AND expression .)
     RBRACKET        reduce using rule 138 (expression -> expression AND expression .)
+    COMMA           reduce using rule 138 (expression -> expression AND expression .)
+    RPAREN          reduce using rule 138 (expression -> expression AND expression .)
     TO              reduce using rule 138 (expression -> expression AND expression .)
     DOWNTO          reduce using rule 138 (expression -> expression AND expression .)
     COLON           shift and go to state 117
@@ -5431,9 +5409,9 @@ state 195
     SEMI            reduce using rule 139 (expression -> expression OR expression .)
     UNTIL           reduce using rule 139 (expression -> expression OR expression .)
     ELSE            reduce using rule 139 (expression -> expression OR expression .)
-    RPAREN          reduce using rule 139 (expression -> expression OR expression .)
-    COMMA           reduce using rule 139 (expression -> expression OR expression .)
     RBRACKET        reduce using rule 139 (expression -> expression OR expression .)
+    COMMA           reduce using rule 139 (expression -> expression OR expression .)
+    RPAREN          reduce using rule 139 (expression -> expression OR expression .)
     TO              reduce using rule 139 (expression -> expression OR expression .)
     DOWNTO          reduce using rule 139 (expression -> expression OR expression .)
     COLON           shift and go to state 117
@@ -5506,9 +5484,9 @@ state 197
     SEMI            reduce using rule 121 (expression -> LPAREN expression RPAREN .)
     UNTIL           reduce using rule 121 (expression -> LPAREN expression RPAREN .)
     ELSE            reduce using rule 121 (expression -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 121 (expression -> LPAREN expression RPAREN .)
-    COMMA           reduce using rule 121 (expression -> LPAREN expression RPAREN .)
     RBRACKET        reduce using rule 121 (expression -> LPAREN expression RPAREN .)
+    COMMA           reduce using rule 121 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 121 (expression -> LPAREN expression RPAREN .)
     TO              reduce using rule 121 (expression -> LPAREN expression RPAREN .)
     DOWNTO          reduce using rule 121 (expression -> LPAREN expression RPAREN .)
 
@@ -5540,9 +5518,9 @@ state 198
     SEMI            reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
     UNTIL           reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
     ELSE            reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
-    RPAREN          reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
-    COMMA           reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
     RBRACKET        reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
+    COMMA           reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
+    RPAREN          reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
     TO              reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
     DOWNTO          reduce using rule 122 (expression -> LBRACKET expression_list RBRACKET .)
 
@@ -5701,11 +5679,13 @@ state 206
 state 207
 
     (110) variable_list -> variable_list COMMA variable .
-    (93) variable -> variable . DOT ID
+    (91) variable -> variable . LBRACKET expression_list RBRACKET
+    (92) variable -> variable . DOT ID
 
     DO              reduce using rule 110 (variable_list -> variable_list COMMA variable .)
     COMMA           reduce using rule 110 (variable_list -> variable_list COMMA variable .)
-    DOT             shift and go to state 73
+    LBRACKET        shift and go to state 73
+    DOT             shift and go to state 74
 
 
 state 208
@@ -6120,9 +6100,9 @@ state 225
     (138) expression -> expression . AND expression
     (139) expression -> expression . OR expression
 
-    RPAREN          reduce using rule 141 (expression_list -> expression_list COMMA expression .)
-    COMMA           reduce using rule 141 (expression_list -> expression_list COMMA expression .)
     RBRACKET        reduce using rule 141 (expression_list -> expression_list COMMA expression .)
+    COMMA           reduce using rule 141 (expression_list -> expression_list COMMA expression .)
+    RPAREN          reduce using rule 141 (expression_list -> expression_list COMMA expression .)
     COLON           shift and go to state 117
     PLUS            shift and go to state 118
     MINUS           shift and go to state 119
@@ -6171,9 +6151,9 @@ state 226
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -6232,9 +6212,9 @@ state 227
     SEMI            reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
     UNTIL           reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
     ELSE            reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
-    RPAREN          reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
-    COMMA           reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
     RBRACKET        reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
+    COMMA           reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
+    RPAREN          reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
     TO              reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
     DOWNTO          reduce using rule 120 (expression -> ID LPAREN expression_list RPAREN .)
 
@@ -6264,9 +6244,9 @@ state 228
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -6312,9 +6292,9 @@ state 229
     (137) expression -> . expression IN expression
     (138) expression -> . expression AND expression
     (139) expression -> . expression OR expression
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
     (113) constant -> . INTEGER
     (114) constant -> . REAL
     (115) constant -> . BOOLEAN
@@ -6396,9 +6376,9 @@ state 233
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -7054,9 +7034,9 @@ state 276
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
@@ -7118,9 +7098,9 @@ state 277
     (112) labeled_statement -> . INTEGER COLON statement
     (77) compound -> . BEGIN statement_list END
     (142) empty -> .
-    (91) variable -> . ID LBRACKET expression RBRACKET
-    (92) variable -> . ID
-    (93) variable -> . variable DOT ID
+    (91) variable -> . variable LBRACKET expression_list RBRACKET
+    (92) variable -> . variable DOT ID
+    (93) variable -> . ID
 
     ID              shift and go to state 47
     IF              shift and go to state 48
