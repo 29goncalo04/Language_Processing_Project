@@ -99,7 +99,8 @@ class SemanticAnalyzer:
             sym = self.current_scope.resolve(tipo_node[1].upper())
             return sym.type
         if kind in ('array_type', 'open_array'):
-            return self._normalize_type(tipo_node[2])
+            elem_type = self._normalize_type(tipo_node[2])
+            return ('ARRAY', elem_type)
         if kind == 'enum':
             return 'ENUM'
         if kind == 'subrange':
@@ -107,7 +108,7 @@ class SemanticAnalyzer:
         if kind == 'packed':
             return self._normalize_type(tipo_node[1])
         if kind == 'short_string':
-            return 'STRING'
+            return 'TEXTO'
         if kind == 'set':
             return 'SET'
         if kind == 'file':
@@ -138,7 +139,11 @@ class SemanticAnalyzer:
 
     def visit_array(self, node):
         _, base, _ = node
-        return self.visit(base)
+        base_type = self.visit(base)
+        if isinstance(base_type, tuple) and base_type[0] == 'ARRAY':
+            return base_type[1]  # tipo do elemento
+        else:
+            raise SemanticError(f"Tentativa de indexar uma variável que não é um array: {base_type}")
 
     def visit_field(self, node):
         _, base, _ = node
@@ -183,7 +188,7 @@ class SemanticAnalyzer:
             # Outros tipos têm de coincidir
             if tipo_esq != tipo_dir:
                 raise SemanticError(f"Comparação '{op}' requer operandos compatíveis, mas recebeu {tipo_esq} e {tipo_dir}.")
-            if tipo_esq not in ['BOOLEAN', 'STRING']:
+            if tipo_esq not in ['BOOLEAN', 'CHAR', 'TEXTO']:
                 raise SemanticError(f"Operador '{op}' não suportado para tipo {tipo_esq}.")
             return 'BOOLEAN'
 
@@ -191,7 +196,7 @@ class SemanticAnalyzer:
             # Apenas INTEGER, REAL e STRING são válidos
             if {tipo_esq, tipo_dir} <= {'INTEGER', 'REAL'}:
                 return 'BOOLEAN'
-            if tipo_esq == tipo_dir == 'STRING':
+            if tipo_esq == tipo_dir == ('CHAR' or 'TEXTO'):
                 return 'BOOLEAN'
             raise SemanticError(f"Operador relacional '{op}' não suportado para tipos {tipo_esq} e {tipo_dir}.")
 
@@ -227,7 +232,7 @@ class SemanticAnalyzer:
             if len(argumentos) != 1:
                 raise SemanticError(f"Função 'length' espera 1 argumento, mas recebeu {len(argumentos)}.")
             t = self.visit(argumentos[0])
-            if t != 'ARRAY':
+            if not (isinstance(t, tuple) and t[0] == 'ARRAY'):
                 raise SemanticError(f"Função 'length' requer ARRAY, mas recebeu {t}.")
             return 'INTEGER'
 
@@ -261,10 +266,7 @@ class SemanticAnalyzer:
         if hasattr(simbolo, 'return_type'):
             return simbolo.return_type
 
-        # procedure: devolve None
-        return
-            
-    
+
 
     def visit_for(self, node):
         # node = ('for', loop_var_name, start_expr, end_expr, direction, body_stmt)
@@ -324,7 +326,6 @@ class SemanticAnalyzer:
 
     def visit_types(self, node):
         _, type_list = node
-        for type_item in type_list:
-            name, tipo = type_item
+        for name, tipo in type_list:
             type_str = self._normalize_type(tipo)
             self.current_scope.define(name.upper(), type_str)
