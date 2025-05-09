@@ -19,7 +19,12 @@ class Scope:
     def define(self, name, type_):
         if name in self.symbols:
             raise SemanticError(f"Variável '{name}' já foi declarada neste escopo.")
-        self.symbols[name] = Symbol(name, type_)
+        if isinstance(type_, Symbol):
+            sym = type_
+            sym.name = name
+        else:
+            sym = Symbol(name, type_)
+        self.symbols[name] = sym
 
     def resolve(self, name):
         if name in self.symbols:
@@ -122,11 +127,31 @@ class SemanticAnalyzer:
             self.visit(instr)
 
     def visit_assign(self, node):
+        # node = ('assign', var_node, expr)
         _, var_node, expr = node
+        nome_var = var_node[1].lower()
+
+        # caso “return” dentro de função
+        if nome_var == getattr(self, 'current_function', None):
+            expr_type = self.visit(expr)
+            # busca símbolo da função no escopo global (onde definimos return_type)
+            func_sym = self.global_scope.resolve(nome_var)
+            ret_type = func_sym.return_type
+            if expr_type != ret_type:
+                raise SemanticError(
+                    f"Tipo de retorno incorreto em '{var_node[1]}': "
+                    f"esperado {ret_type}, mas foi {expr_type}."
+                )
+            return
+
+        # atribuição normal a variável
         var_type = self.visit(var_node).upper()
         expr_type = self.visit(expr)
-        if expr_type != var_type:
-            raise SemanticError(f"Tipos incompatíveis: variável é {var_type}, mas expressão é {expr_type}.")
+        if expr_type.upper() != var_type:
+            raise SemanticError(
+                f"Tipos incompatíveis na atribuição: variável '{var_node[1]}' é {var_type}, "
+                f"mas expressão é {expr_type}."
+            )
 
     def visit_numero(self, node):
         _, valor = node
@@ -227,7 +252,7 @@ class SemanticAnalyzer:
         _, nome, argumentos = node
         nl = nome.lower()
 
-        # ── caso especial: length(array) → INTEGER
+        # caso especial length(array)
         if nl == 'length':
             if len(argumentos) != 1:
                 raise SemanticError(f"Função 'length' espera 1 argumento, mas recebeu {len(argumentos)}.")
@@ -236,35 +261,80 @@ class SemanticAnalyzer:
                 raise SemanticError(f"Função 'length' requer ARRAY, mas recebeu {t}.")
             return 'INTEGER'
 
-        # ── resolve símbolo (procedure ou function)
+        # resolve símbolo (lança se não existir)
         simbolo = self.current_scope.resolve(nl)
 
-        # ── procedures predefinidas (write, writeln, read, readln)
-        if not hasattr(simbolo, 'params'):
-            for arg in argumentos:
-                self.visit(arg)
-            return  # procedure não devolve tipo
+        # se tiver .params é função ou procedure do utilizador
+        if hasattr(simbolo, 'params'):
+            # valida número de argumentos
+            if len(argumentos) != len(simbolo.params):
+                raise SemanticError(
+                    f"'{nome}' espera {len(simbolo.params)} argumentos, mas recebeu {len(argumentos)}."
+                )
+            # valida cada argumento
+            for (param_nome, param_tipo), arg_expr in zip(simbolo.params, argumentos):
+                arg_tipo = self.visit(arg_expr)
+                if arg_tipo != param_tipo:
+                    # permite INTEGER→REAL
+                    if not (param_tipo == 'REAL' and arg_tipo == 'INTEGER'):
+                        raise SemanticError(
+                            f"Argumento para '{param_nome}' deve ser {param_tipo}, mas recebeu {arg_tipo}."
+                        )
+            # se tiver return_type, devolve-o (função)
+            if hasattr(simbolo, 'return_type'):
+                return simbolo.return_type
+            # caso procedure do utilizador
+            return None
 
-        # ── procedimentos/funções do utilizador (têm .params)
-        parametros = simbolo.params
-        if len(parametros) != len(argumentos):
-            raise SemanticError(
-                f"'{nome}' espera {len(parametros)} argumentos, mas recebeu {len(argumentos)}."
-            )
+        # built‑in procedure (write, writeln, read, readln)
+        for arg in argumentos:
+            self.visit(arg)
+        return None
+    
 
-        # valida cada argumento
-        for (param_nome, param_tipo), arg_expr in zip(parametros, argumentos):
-            arg_tipo = self.visit(arg_expr)
-            if arg_tipo != param_tipo:
-                # coerção INTEGER→REAL permitida
-                if not (param_tipo == 'REAL' and arg_tipo == 'INTEGER'):
-                    raise SemanticError(
-                        f"Argumento para '{param_nome}' deve ser {param_tipo}, mas recebeu {arg_tipo}."
-                    )
 
-        # ── se tiver return_type, é function: devolve-o
-        if hasattr(simbolo, 'return_type'):
-            return simbolo.return_type
+    def visit_function(self, node):
+        # node = ('function', nome, params, return_type, block)
+        _, nome, params, return_type, block = node
+        nl = nome.lower()
+
+        # 1) verifica duplicação no escopo pai
+        if nl in self.current_scope.symbols:
+            raise SemanticError(f"A função '{nome}' já está definida.")
+
+        # 2) cria e regista o símbolo da função no escopo actual (pai)
+        func_sym = Symbol(nl, 'function')
+        # converte params AST → lista de (nome, TIPO)
+        lista = []
+        for p in params:                        # p = ('param',[nomes], tipo_node)
+            _, nomes, tipo_node = p
+            tipo_str = self._normalize_type(tipo_node)
+            for id_name in nomes:
+                lista.append((id_name.lower(), tipo_str))
+        func_sym.params = lista
+        # tipo de retorno normalizado
+        func_sym.return_type = self._normalize_type(return_type).upper()
+
+        # define a função no escopo actual
+        self.current_scope.define(nl, func_sym)
+
+        # 3) prepara análise do corpo
+        prev_fn = getattr(self, 'current_function', None)
+        self.current_function = nl
+
+        # abre escopo interno e define só os parâmetros
+        self.current_scope = Scope(self.current_scope)
+        for param_nome, param_tipo in func_sym.params:
+            self.current_scope.define(param_nome, param_tipo)
+
+        # analisa corpo
+        self.visit(block)
+
+        # fecha escopo e repõe função corrente
+        self.current_scope = self.current_scope.parent
+        self.current_function = prev_fn
+
+        return func_sym.return_type
 
 
 

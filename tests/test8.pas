@@ -1,6 +1,6 @@
 program BinarioParaInteiro;
 
-function BinToInt(bin: string): integer;
+function BinToInt(bin: array[1..100] of CHAR): integer;
 var
     i, valor, potencia: integer;
 begin
@@ -18,7 +18,7 @@ begin
 end;
 
 var
-    bin: string;
+    bin: array[1..100] of CHAR;
     valor: integer;
 begin
     writeln('Introduza uma string binária:');

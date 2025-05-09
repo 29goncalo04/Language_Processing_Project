@@ -1,4 +1,6 @@
 program BinarioParaInteiro;
+type
+  string = array[1..100] of CHAR;
 var
     bin: string;
     i, valor, potencia: integer;
