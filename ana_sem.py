@@ -360,7 +360,7 @@ class SemanticAnalyzer:
         if nl == 'length':
             if len(argumentos) != 1:
                 raise SemanticError(f"Função 'length' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            t = self.visit(argumentos[0])
+            t = self.current_scope.resolve(argumentos[0][1]).type
             if not (isinstance(t, tuple) and t[0] == 'array'):
                 raise SemanticError(f"Função 'length' requer array, mas recebeu {t}.")
             return 'integer'
@@ -369,11 +369,11 @@ class SemanticAnalyzer:
             if len(argumentos) != 2:
                 raise SemanticError(f"Procedure 'assign' espera 2 argumentos, mas recebeu {len(argumentos)}.")
             # argumento 1
-            t1 = self.visit(argumentos[0])
+            t1 = self.current_scope.resolve(argumentos[0][1]).type
             if t1.casefold() != 'file':
                 raise SemanticError(f"Argumento 1 de 'assign' deve ser FILE, mas recebeu {t1}.")
             # argumento 2
-            t2 = self.visit(argumentos[1])
+            t2 = self.current_scope.resolve(argumentos[1][1]).type
             if not (
                 (isinstance(t2, tuple) and t2 == ('array','char'))
                 or (isinstance(t2, str) and t2 == 'texto')
@@ -384,7 +384,7 @@ class SemanticAnalyzer:
         if nl == 'high':
             if len(argumentos) != 1:
                 raise SemanticError(f"Função 'high' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            t = self.visit(argumentos[0])
+            t = self.current_scope.resolve(argumentos[0][1]).type
             if not (isinstance(t, tuple) and t[0].casefold() == 'array'):
                 raise SemanticError(f"Função 'high' requer array, mas recebeu {t}.")
             return 'integer'
@@ -392,7 +392,7 @@ class SemanticAnalyzer:
         if nl == 'close':
             if len(argumentos) != 1:
                 raise SemanticError(f"Procedure 'close' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            t = self.visit(argumentos[0])
+            t = self.current_scope.resolve(argumentos[0][1]).type
             if t.casefold() != 'file':
                 raise SemanticError(f"Argumento de 'close' deve ser FILE, mas recebeu {t}.")
             return None
@@ -400,7 +400,7 @@ class SemanticAnalyzer:
         if nl == 'chr':
             if len(argumentos) != 1:
                 raise SemanticError(f"Função 'chr' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            t = self.visit(argumentos[0])
+            t = self.current_scope.resolve(argumentos[0][1]).type
             if t.casefold() != 'integer':
                 raise SemanticError(f"Argumento de 'chr' deve ser INTEGER, mas recebeu {t}.")
             return 'char'
@@ -410,7 +410,7 @@ class SemanticAnalyzer:
             if len(argumentos) != len(simbolo.params):
                 raise SemanticError(f"'{nome}' espera {len(simbolo.params)} argumentos, mas recebeu {len(argumentos)}.")
             for (pname, ptype), a in zip(simbolo.params, argumentos):
-                at = self.visit(a)
+                at = self.current_scope.resolve(a[1].lower()).type
                 if at != ptype:
                     if not ((ptype=='real' and at=='integer') or (ptype=='texto' and at==('array', 'char')) or (ptype==('array', 'char') and at=='texto')):
                         raise SemanticError(f"Argumento para '{pname}' deve ser {ptype}, mas recebeu {at}.")
@@ -421,15 +421,36 @@ class SemanticAnalyzer:
         # 5) Built‑in simples (write, writeln, read, readln)
         for a in argumentos:
             if simbolo.name in ('read', 'readln'):
-                _, nome = a
-                key = nome.lower()
-                sym = self.current_scope.resolve(key)
-                self.initialized.add(key)
-                return sym.type
-            else:
-                self.visit(a)
-        return None
-    
+                # Aqui, 'a' pode ser uma variável ou um array.
+                if isinstance(a, tuple):
+                    tipo = a[0]  # Tipo pode ser 'var' ou 'array'
+
+                    if tipo == 'var':
+                        # Caso seja uma variável simples
+                        _, nome = a  # Espera-se que 'a' seja uma tupla do tipo ('var', 'nome')
+                        key = nome.lower()
+                        sym = self.current_scope.resolve(key)
+                        self.initialized.add(key)
+                        return sym.type
+
+                    elif tipo == 'array':
+                        # Caso seja um array, o segundo elemento é uma tupla com a variável
+                        _, nome = a[1]  # 'a[1]' será a tupla ('var', 'nome_do_array')
+                        key = nome.lower()
+                        sym = self.current_scope.resolve(key)
+                        self.initialized.add(key)
+
+                        # Verificar se há um terceiro elemento que representa os índices
+                        if len(a) > 2:  # Caso haja índices
+                            indices = a[2]  # Os índices estão em 'a[2]'
+                            for index in indices:
+                                index_type = self.visit(index)  # Processa o índice
+                        
+                        return sym.type  # Retorna o tipo da variável do tipo array
+
+                else:
+                    # Se 'a' não for uma tupla, apenas visita o argumento
+                    self.current_scope.resolve(a[1]).type
 
 
     def visit_function(self, node):
@@ -465,6 +486,7 @@ class SemanticAnalyzer:
         self.current_scope = Scope(self.current_scope)
         for param_nome, param_tipo in func_sym.params:
             self.current_scope.define(param_nome.lower(), param_tipo)
+            self.initialized.add(param_nome.lower())
 
         # analisa corpo
         self.visit(block)
@@ -612,6 +634,7 @@ class SemanticAnalyzer:
         self.current_scope = Scope(self.current_scope)
         for param_nome, param_tipo in proc_sym.params:
             self.current_scope.define(param_nome, param_tipo)
+            self.initialized.add(param_nome)
 
         # 5) visita o bloco (corpo da procedure)
         self.visit(block)
