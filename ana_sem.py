@@ -200,7 +200,6 @@ class SemanticAnalyzer:
     def visit_var(self, node):
         _, nome = node
         key = nome.lower()
-
         # se ainda não foi inicializada, erro
         if key not in self.initialized:
             raise SemanticError(f"Variável '{nome}' usada antes de inicialização.")
@@ -211,7 +210,8 @@ class SemanticAnalyzer:
 
     def visit_array(self, node):
         _, base, _ = node
-        base_type = self.visit(base)
+        key = base[1].lower()
+        base_type = self.current_scope.resolve(key).type
         if isinstance(base_type, tuple) and base_type[0] == 'array':
             return base_type[1]  # tipo do elemento
         else:
