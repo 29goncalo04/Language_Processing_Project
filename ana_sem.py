@@ -39,6 +39,7 @@ class SemanticAnalyzer:
     def __init__(self):
         self.global_scope = Scope()
         self.current_scope = self.global_scope
+        self.initialized = set()
         self._init_builtins()
     
     def _init_builtins(self):
@@ -71,6 +72,12 @@ class SemanticAnalyzer:
         chr_sym.params = [('code','integer')]
         chr_sym.return_type = 'char'
         self.global_scope.define('chr', chr_sym)
+
+        for tname in ('integer','real'):
+            sym = Symbol(tname, 'function')
+            sym.params = [('x', tname)]
+            sym.return_type = tname
+            self.global_scope.define(tname, sym)
 
     def analyze(self, node):
         self.visit(node)
@@ -171,13 +178,20 @@ class SemanticAnalyzer:
                 return
 
         # atribuição normal a variável
-        var_type = self.visit(var_node)
+        # obter tipo sem tratar como “leitura” (para não disparar check de uninitialized)
+        if var_node[0] == 'var':
+            var_name = var_node[1].lower()
+            var_type = self.current_scope.resolve(var_name).type
+        else:
+            var_type = self.visit(var_node)
         expr_type = self.visit(expr)
         if expr_type.upper() != var_type.upper():
             raise SemanticError(
                 f"Tipos incompatíveis na atribuição: variável '{var_node}' é {var_type}, "
                 f"mas expressão é {expr_type}."
             )
+        if var_node[0] == 'var':
+            self.initialized.add(var_name)
 
     def visit_numero(self, node):
         _, valor = node
@@ -185,7 +199,14 @@ class SemanticAnalyzer:
 
     def visit_var(self, node):
         _, nome = node
-        sym = self.current_scope.resolve(nome.lower())
+        key = nome.lower()
+
+        # se ainda não foi inicializada, erro
+        if key not in self.initialized:
+            raise SemanticError(f"Variável '{nome}' usada antes de inicialização.")
+
+        # se passou no teste, resolve e devolve o tipo
+        sym = self.current_scope.resolve(key)
         return sym.type
 
     def visit_array(self, node):
@@ -254,11 +275,11 @@ class SemanticAnalyzer:
             return 'boolean'
     
         elif op in ['<', '<=', '>', '>=']:
-            if {base_esq, base_dir} <= {'integer', 'real'}:
+            if base_esq == base_dir and base_esq in ['integer','real','char','texto']:
                 return 'boolean'
-            if base_esq == base_dir and base_esq in ['char', 'texto']:
-                return 'boolean'
-            raise SemanticError(f"Operador relacional '{op}' não suportado para tipos {tipo_esq} e {tipo_dir}.")
+            raise SemanticError(
+                f"Operador relacional '{op}' não suportado para tipos {tipo_esq} e {tipo_dir}."
+            )
     
         # Operador IN (elemento ∈ conjunto)
         if op == 'in':
@@ -313,6 +334,20 @@ class SemanticAnalyzer:
             t = self.visit(argumentos[0])
             # podes aqui validar intervalos (e.g. 0..6) se quiseres
             return nl   # devolve o nome do tipo (casefold)
+
+        # —————— CAST PARA REAL/INTEGER ——————
+        if nl in ('real', 'integer'):
+            # espera exactamente 1 argumento
+            if len(argumentos) != 1:
+                raise SemanticError(f"Cast para '{nome}' espera 1 argumento, mas recebeu {len(argumentos)}.")
+            # valida semanticamente o interior
+            at = self.visit(argumentos[0])
+            # só permites integer→real ou real→integer se quiseres
+            if nl == 'real' and at not in ('integer','real'):
+                raise SemanticError(f"Cast real({at}) inválido; só integer ou real.")
+            if nl == 'integer' and at not in ('integer','real'):
+                raise SemanticError(f"Cast integer({at}) inválido; só integer ou real.")
+            return nl   # devolve o tipo do cast
 
         # caso especial length(array)
         if nl == 'length':
@@ -450,7 +485,7 @@ class SemanticAnalyzer:
             raise SemanticError(
                 f"Expressão final do FOR deve ser integer, mas é {t_end}."
             )
-
+        self.initialized.add(var_name.lower())
         # 3) Processa o corpo do laço
         self.visit(body)
     
@@ -641,3 +676,21 @@ class SemanticAnalyzer:
 
         # 4) O resultado do fmt é do mesmo tipo da expr
         return expr_type
+    
+
+
+    def visit_repeat(self, node):
+        # node = ('repeat', statement_list, expression)
+        _, stmts, cond = node
+
+        # 1) Analisa cada instrução dentro do repeat…until
+        for stmt in stmts:
+            if stmt is not None:
+                self.visit(stmt)
+
+        # 2) A condição de UNTIL tem de ser boolean
+        cond_type = self.visit(cond)
+        if cond_type.lower() != 'boolean':
+            raise SemanticError(
+                f"Condição de REPEAT…UNTIL deve ser boolean, mas recebeu {cond_type}."
+            )
