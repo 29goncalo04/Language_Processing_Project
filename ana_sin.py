@@ -19,16 +19,8 @@ precedence = (
 
 # Programa
 def p_program(p):
-    'program : PROGRAM ID program_params SEMI block DOT'
-    p[0] = ('program', p[2], p[3], p[5])
-
-def p_program_params(p):
-    '''program_params : LPAREN ID_LIST RPAREN
-                      | empty'''
-    if len(p) == 2:
-        p[0] = p[1]
-    else:
-        p[0] = p[2]
+    'program : PROGRAM ID SEMI block DOT'
+    p[0] = ('program', p[2], p[4])
 
 
 
@@ -153,6 +145,7 @@ def p_type(p):
     '''type : packed_type
             | short_string
             | simple_type
+            | id_type
             | array_type
             | enum_type
             | subrange_type
@@ -170,9 +163,12 @@ def p_short_string(p):
     p[0] = ('short_string', p[1], p[3])
 
 def p_simple_type(p):
-    '''simple_type : TIPO
-                   | ID'''
+    'simple_type : TIPO'
     p[0] = ('simple_type', p[1])
+
+def p_id_type(p):
+    'id_type : ID'
+    p[0] = ('id_type', p[1])
 
 def p_array_type_open(p):
     'array_type : ARRAY OF type'
@@ -226,10 +222,11 @@ def p_const_expr(p):
     '''const_expr : INTEGER
                   | REAL
                   | BOOLEAN
-                  | STRING
+                  | CHAR
+                  | TEXTO
                   | ID
                   | NIL'''
-    p[0] = ('const', p[1])
+    p[0] = ('const_expr', p.slice[1].type.lower(), p[1])
 
 
 
@@ -468,9 +465,10 @@ def p_constant(p):
     '''constant : INTEGER
                 | REAL
                 | BOOLEAN
-                | STRING
+                | CHAR
+                | TEXTO
                 | NIL'''
-    p[0] = ('const', p[1])
+    p[0] = ('const', p.slice[1].type.lower(), p[1])
 
 
 
