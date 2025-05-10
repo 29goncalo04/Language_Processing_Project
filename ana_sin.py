@@ -476,6 +476,7 @@ def p_constant(p):
 def p_expression(p):
     '''expression : variable
                   | constant
+                  | TIPO LPAREN expression_list RPAREN
                   | ID LPAREN expression_list RPAREN
                   | LPAREN expression RPAREN
                   | LBRACKET expression_list RBRACKET
