@@ -413,7 +413,14 @@ class SemanticAnalyzer:
 
         # 5) Built‑in simples (write, writeln, read, readln)
         for a in argumentos:
-            self.visit(a)
+            if simbolo.name in ('read', 'readln'):
+                _, nome = a
+                key = nome.lower()
+                sym = self.current_scope.resolve(key)
+                self.initialized.add(key)
+                return sym.type
+            else:
+                self.visit(a)
         return None
     
 
