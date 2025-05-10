@@ -170,10 +170,6 @@ def p_id_type(p):
     'id_type : ID'
     p[0] = ('id_type', p[1])
 
-def p_array_type_open(p):
-    'array_type : ARRAY OF type'
-    p[0] = ('open_array', p[3])
-
 def p_array_type_range(p):
     'array_type : ARRAY LBRACKET range_list RBRACKET OF type'
     p[0] = ('array_type', p[3], p[6])
