@@ -3,12 +3,13 @@ class SemanticError(Exception):
 
 
 class Symbol:
-    def __init__(self, name, type_):
+    def __init__(self, name, type_, kind='var'):
         self.name = name
         self.type = type_
+        self.kind = kind  # 'var' ou 'const'
 
     def __repr__(self):
-        return f"<Symbol name={self.name}, type={self.type}>"
+        return f"<Symbol name={self.name}, type={self.type}, kind={self.kind}>"
 
 
 class Scope:
@@ -16,14 +17,15 @@ class Scope:
         self.symbols = {}
         self.parent = parent
 
-    def define(self, name, type_):
+    def define(self, name, type_, kind='var'):
         if name in self.symbols:
             raise SemanticError(f"Variável '{name}' já foi declarada neste escopo.")
         if isinstance(type_, Symbol):
             sym = type_
             sym.name = name
+            sym.kind = kind  # Define o tipo como 'var' ou 'const'
         else:
-            sym = Symbol(name, type_)
+            sym = Symbol(name, type_, kind)
         self.symbols[name] = sym
 
     def resolve(self, name):
@@ -111,7 +113,8 @@ class SemanticAnalyzer:
             if nome.lower() in self.current_scope.symbols:
                 raise SemanticError(f"Constante '{nome}' já declarada.")
             tipo = self.visit(expr).lower()
-            self.current_scope.define(nome.lower(), tipo)
+            self.current_scope.define(nome.lower(), tipo, kind='const')  # Marca como 'const'
+            self.initialized.add(nome.lower())
 
     def visit_var_decl(self, node):
         _, decls = node
@@ -122,7 +125,9 @@ class SemanticAnalyzer:
         _, nomes, tipo = node
         type_str = self._normalize_type(tipo)
         for nome in nomes:
-            self.current_scope.define(nome.lower(), type_str)
+            if nome.lower() in self.current_scope.symbols and self.current_scope.symbols[nome.lower()].kind == 'const':
+                raise SemanticError(f"Não pode declarar uma variável '{nome}' com o mesmo nome de uma constante.")
+            self.current_scope.define(nome.lower(), type_str, kind='var')  # Marca como 'var'
 
     def _normalize_type(self, tipo_node):
         kind = tipo_node[0].lower()
@@ -180,6 +185,8 @@ class SemanticAnalyzer:
         # atribuição normal a variável
         # obter tipo sem tratar como “leitura” (para não disparar check de uninitialized)
         if var_node[0] == 'var':
+            if self.current_scope.symbols[nome_var].kind == 'const':
+                raise SemanticError(f"Não pode declarar uma constante como se fosse uma variável")
             var_name = var_node[1].lower()
             var_type = self.current_scope.resolve(var_name).type
         else:
