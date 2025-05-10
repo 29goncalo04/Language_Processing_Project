@@ -5,6 +5,7 @@ const
   MAXLIST = 5;
 
 type
+  string = array[1..100] of CHAR;
   TScore = 0..100;
 
   TDayOfWeek = (Segunda, Terca, Quarta, Quinta, Sexta, Sabado, Domingo);
@@ -31,7 +32,7 @@ var
   M: TMatrix;
   i: Integer;
 
-function Factorial(n: Integer): LongInt;
+function Factorial(n: Integer): Integer;
 begin
   if n <= 1 then
     Factorial := 1
@@ -39,7 +40,7 @@ begin
     Factorial := n * Factorial(n - 1);
 end;
 
-function Fibonacci(n: Integer): LongInt;
+function Fibonacci(n: Integer): Integer;
 begin
   if n in [0,1] then
     Fibonacci := n
@@ -102,11 +103,9 @@ begin
 end;
 
 begin
-  ClrScr;
 
   for i := 1 to MAXPESSOAS do
   begin
-    Pessoas[i].Nome := 'Pessoa_' + Chr(64 + i);
     Pessoas[i].Idade := 20 + i;
     Pessoas[i].Pontuacao := i * 10;
     Pessoas[i].DiaFavorito := TDayOfWeek((i - 1) mod 7);

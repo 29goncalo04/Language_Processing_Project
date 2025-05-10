@@ -1,4 +1,4 @@
-program TesteCompleto(input, output);
+program TesteCompleto;
 
 { secção CONST }
 const
