@@ -47,7 +47,8 @@ tokens = (
     'ID',
     'REAL',
     'INTEGER',
-    'STRING',
+    'CHAR',
+    'TEXTO',
 
     # Operadores
     'PLUS',
@@ -247,10 +248,24 @@ t_RANGE   = r'\.\.'  # Intervalo: '..'
 t_DOT     = r'\.'
 t_COLON   = r':'
 
-# Strings (passa duplo apóstrofo para um único: "it''s" -> "it's")
-def t_STRING(t):
-    r"'([^']|'')*'"
-    t.value = t.value[1:-1].replace("''", "'")
+def t_CHAR(t):
+    r"\'([^']|\'\')\'"
+    valor = t.value[1:-1].replace("''", "'")
+    if len(valor) != 1:
+        print(f"Erro: literal de carácter inválido '{t.value}' na linha {t.lineno}")
+        t.lexer.skip(1)
+        return
+    t.value = valor
+    return t
+
+# Strings (vários caracteres): 'ABC', 'it''s'
+def t_TEXTO(t):
+    r"\'([^']|'')+\'"
+    valor = t.value[1:-1].replace("''", "'")
+    if len(valor) == 1:
+        # Captado por engano, ignora este token
+        return
+    t.value = valor
     return t
 
 # Constantes reais
