@@ -90,7 +90,7 @@ begin
       A[r,c] := r * 0.1 + c * 0.2;
 end;
 
-procedure SavePessoas(const FileName: string; const Arr: array of TPessoa);
+procedure SavePessoas(const FileName: string; const Arr: array[1..10] of TPessoa);
 var
   F: TPessoaFile;
   j: Integer;
