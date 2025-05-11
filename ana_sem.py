@@ -68,8 +68,12 @@ class SemanticAnalyzer:
     def generic_visit(self, node):
         raise Exception(f"visit_{node[0]} não implementado")
 
+
+
     def visit_program(self, node):
         self.visit(node[2])
+
+
 
     def visit_block(self, node):
         _, decls, comp = node
@@ -79,6 +83,8 @@ class SemanticAnalyzer:
         # Depois processa as instruções compostas (o corpo do bloco)
         self.visit(comp)
 
+
+
     def visit_consts(self, node):
         _, const_list = node
         for nome, expr in const_list:
@@ -87,6 +93,80 @@ class SemanticAnalyzer:
             tipo = self.visit(expr).lower()
             self.current_scope.define(nome.lower(), tipo, kind='const')  # Marca como 'const'
             self.initialized.add(nome.lower())
+    
+
+
+    def visit_types(self, node):
+        _, type_list = node
+        for name, tipo in type_list:
+            kind = tipo[0].lower()
+            if kind == 'record':
+                # extrai a lista de declarações de campos
+                field_list = tipo[1]
+                # normaliza cada campo
+                campos = {}
+                for _, nomes, campo_tipo_node in field_list:   # nodo ('fields', [nomes], tipo_node)
+                    t_str = self._normalize_type(campo_tipo_node)
+                    for id_name in nomes:
+                        key = id_name.lower()
+                        if key in campos:
+                            raise SemanticError(f"Campo '{id_name}' já definido em record '{name}'.")
+                        campos[key] = t_str
+                # cria símbolo do tipo record, com atributo .fields
+                rec_sym = Symbol(name.lower(), name.lower())
+                rec_sym.fields = campos
+                self.current_scope.define(name.lower(), rec_sym)
+            else:
+                if kind == 'enum':
+                    # os enums continuam a ser um tipo próprio
+                    self.current_scope.define(name.lower(), 'enum')
+                    for e in tipo[1]:
+                        self.current_scope.define(e.lower(), 'enum')
+                        self.initialized.add(e.lower())
+                elif kind == 'subrange':
+                    # subrange → desce ao tipo base (integer)
+                    base_type = self._normalize_type(tipo)   # isto já retorna 'integer'
+                    self.current_scope.define(name.lower(), base_type)
+                else:
+                    if tipo[0].lower() == 'array_type':
+                        lower_node, upper_node = tipo[1] 
+                        # cada limite tem de ser const_expr
+                        if lower_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                        if upper_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                        # se for id, garante que é constante
+                        for bound in (lower_node, upper_node):
+                            kind = bound[1].lower()
+                            if kind == 'id':
+                                name2 = bound[2].lower()
+                                sym = self.current_scope.resolve(name2)
+                                if sym.kind != 'const':
+                                    raise SemanticError(
+                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                if sym.type != 'integer':
+                                     raise SemanticError(
+                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                            elif kind != 'integer':
+                                raise SemanticError(
+                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                    type_str = self._normalize_type(tipo)
+                    self.current_scope.define(name.lower(), type_str)
+
+
+
+    def visit_labels(self, node):
+        _, label_list = node
+
+        for lbl in label_list:
+            key = str(lbl).lower()
+            # se já existir um símbolo com esse nome no mesmo escopo, é duplicado
+            if key in self.current_scope.symbols:
+                raise SemanticError(f"Label '{lbl}' já declarado neste escopo.")
+            # define-o como símbolo de tipo 'label'
+            self.current_scope.symbols[key] = Symbol(key, 'label')
+
+
 
     def visit_var_decl(self, node):
         _, decls = node
@@ -124,35 +204,139 @@ class SemanticAnalyzer:
                 raise SemanticError(f"Não pode declarar uma variável '{nome}' com o mesmo nome de uma constante.")
             self.current_scope.define(nome.lower(), type_str, kind='var')
 
-    def _normalize_type(self, tipo_node):
-        kind = tipo_node[0].lower()
-        if kind == 'simple_type':
-            return tipo_node[1].lower()
-        if kind == 'id_type':
-            sym = self.current_scope.resolve(tipo_node[1].lower())
-            return sym.type
-        if kind == 'array_type':
-            elem_type = self._normalize_type(tipo_node[2])
-            return ('array', elem_type)
-        if kind == 'enum':
-            return 'ENUM'.lower()
-        if kind == 'subrange':
-            return 'integer'.lower()
-        if kind == 'packed':
-            return self._normalize_type(tipo_node[1])
-        if kind == 'short_string':
-            return 'texto'.lower()
-        if kind == 'set':
-            return 'SET'.lower()
-        if kind == 'file':
-            return 'FILE'.lower()
-        if kind == 'record':
-            return 'RECORD'.lower()
 
-    def visit_instrucao_composta(self, node):
-        _, instrs = node
-        for instr in instrs:
-            self.visit(instr)
+
+    def visit_function(self, node):
+        # node = ('function', nome, params, return_type, block)
+        _, nome, params, return_type, block = node
+        nl = nome.lower()
+
+        # 1) verifica duplicação no escopo pai
+        if nl in self.current_scope.symbols:
+            raise SemanticError(f"A função '{nome}' já está definida.")
+
+        # 2) cria e regista o símbolo da função no escopo actual (pai)
+        func_sym = Symbol(nl, 'function')
+        # converte params AST → lista de (nome, TIPO)
+        lista = []
+        for p in params:                        # p = ('param',[nomes], tipo_node)
+            _, nomes, tipo_node = p
+            tipo_str = self._normalize_type(tipo_node)
+            for id_name in nomes:
+                lista.append((id_name.lower(), tipo_str))
+        func_sym.params = lista
+        # tipo de retorno normalizado
+        func_sym.return_type = self._normalize_type(return_type)
+
+        # define a função no escopo actual
+        self.current_scope.define(nl, func_sym)
+
+        # 3) prepara análise do corpo
+        prev_fn = getattr(self, 'current_function', None)
+        self.current_function = nl
+
+        # abre escopo interno e define só os parâmetros
+        self.current_scope = Scope(self.current_scope)
+        for param_nome, param_tipo in func_sym.params:
+            self.current_scope.define(param_nome.lower(), param_tipo)
+            self.initialized.add(param_nome.lower())
+
+        # analisa corpo
+        self.visit(block)
+
+        # fecha escopo e repõe função corrente
+        self.current_scope = self.current_scope.parent
+        self.current_function = prev_fn
+
+        return func_sym.return_type
+    
+
+
+    def visit_procedure(self, node):
+        # node = ('procedure', nome, params, block)
+        _, nome, params, block = node
+        nl = nome.lower()
+
+        # 1) verifica duplicação no escopo actual
+        if nl in self.current_scope.symbols:
+            raise SemanticError(f"Procedimento '{nome}' já está definido neste escopo.")
+
+        # 2) cria o símbolo da procedure no escopo actual (pai)
+        proc_sym = Symbol(nl, 'procedure')
+
+        # ── extrai e normaliza os parâmetros, tal como em visit_function
+        lista = []
+        if params != None:
+            for p in params:                  # p = ('param', [nomes], tipo_node)
+                _, nomes, tipo_node = p
+                if tipo_node[0].lower() == 'array_type':
+                        lower_node, upper_node = tipo_node[1] 
+                        # cada limite tem de ser const_expr
+                        if lower_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                        if upper_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                        # se for id, garante que é constante
+                        for bound in (lower_node, upper_node):
+                            kind = bound[1].lower()
+                            if kind == 'id':
+                                name2 = bound[2].lower()
+                                sym = self.current_scope.resolve(name2)
+                                if sym.kind != 'const':
+                                    raise SemanticError(
+                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                if sym.type != 'integer':
+                                     raise SemanticError(
+                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                            elif kind != 'integer':
+                                raise SemanticError(
+                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                tipo_str = self._normalize_type(tipo_node)
+                for id_name in nomes:
+                    lista.append((id_name.lower(), tipo_str))
+        proc_sym.params = lista
+
+        # regista a procedure no escopo actual
+        self.current_scope.define(nl, proc_sym)
+
+        # 3) prepara‑te para analisar o corpo
+        prev_proc = getattr(self, 'current_procedure', None)
+        self.current_procedure = nl
+
+        # 4) abre escopo filho e define os parâmetros aí
+        self.current_scope = Scope(self.current_scope)
+        for param_nome, param_tipo in proc_sym.params:
+            self.current_scope.define(param_nome, param_tipo)
+            self.initialized.add(param_nome.lower())
+
+        # 5) visita o bloco (corpo da procedure)
+        self.visit(block)
+
+        # 6) restaura escopo e current_procedure
+        self.current_scope = self.current_scope.parent
+        self.current_procedure = prev_proc
+
+
+        
+    def visit_const_expr(self, node):
+        _, type, b = node
+        if type == 'id':
+            const_node = 'var', b.lower()
+            return self.visit(const_node).lower()
+        return type
+
+
+
+    def visit_compound(self, node):
+        # node = ('compound', statement_list)
+        _, stmts = node
+        # Percorre cada instrução do bloco composto
+        for stmt in stmts:
+            # stmt pode ser None (na regra de statement permite empty)
+            if stmt is not None:
+                self.visit(stmt)
+
+
 
     def visit_assign(self, node):
         # node = ('assign', var_node, expr)
@@ -200,9 +384,7 @@ class SemanticAnalyzer:
         if var_node[0] == 'var':
             self.initialized.add(var_node[1].lower())
 
-    def visit_numero(self, node):
-        _, valor = node
-        return 'real' if '.' in str(valor) else 'integer'
+
 
     def visit_var(self, node):
         _, nome = node
@@ -214,25 +396,24 @@ class SemanticAnalyzer:
         # se passou no teste, resolve e devolve o tipo
         sym = self.current_scope.resolve(key)
         return sym.type
-        #
+    
+
 
     def visit_array(self, node):
         _, base, indice = node
         key = base[1].lower()
         base_type = self.current_scope.resolve(key).type
-
         if not (isinstance(base_type, tuple) and base_type[0] == 'array'):
             raise SemanticError(f"Tentativa de indexar uma variável que não é um array: {base_type}")
-
         idx_type = self.visit(indice)
         if idx_type != 'integer':
             raise SemanticError(f"Índice de array deve ser INTEGER, mas recebeu {idx_type}.")
-
         return base_type[1]  # tipo do elemento do array
+    
+
 
     def visit_field(self, node):
         _, base_node, field_name = node
-
         # obtém o tipo do base (pode vir de visit_var ou visit_array)
         if base_node[0] == 'var':
             base_type = self.current_scope.resolve(base_node[1].lower()).type
@@ -240,110 +421,12 @@ class SemanticAnalyzer:
             base_type = self.visit(base_node)
         # resolve o símbolo desse tipo
         type_sym = self.current_scope.resolve(base_type)
-
         if not hasattr(type_sym, 'fields'):
             raise SemanticError(f"Tentativa de aceder campo '{field_name}' de não‑record ({base_type}).")
-
         key = field_name.lower()
         if key not in type_sym.fields:
             raise SemanticError(f"Campo '{field_name}' não existe em record '{base_type}'.")
         return type_sym.fields[key]
-
-    def visit_const(self, node):
-        _, type, _ = node
-        return type
-    
-    def visit_const_expr(self, node):
-        _, type, b = node
-        if type == 'id':
-            const_node = 'var', b.lower()
-            return self.visit(const_node).lower()
-        return type
-
-    def visit_binop(self, node):
-        _, op, esq, dir_ = node
-        op = op.lower()
-        tipo_esq = self.visit(esq)
-        tipo_dir = self.visit(dir_)
-    
-        # Função auxiliar para obter o nome base (e.g. 'set' ou 'integer')
-        def tipo_base(t):
-            return t.lower() if isinstance(t, str) else t[0].lower()
-    
-        base_esq = tipo_base(tipo_esq)
-        base_dir = tipo_base(tipo_dir)
-    
-        # Operadores aritméticos
-        if op in ['+', '-', '*', '/']:
-            if base_esq not in ['integer', 'real'] or base_dir not in ['integer', 'real']:
-                raise SemanticError(f"Operador '{op}' só pode ser aplicado a tipos numéricos, mas recebeu {tipo_esq} e {tipo_dir}.")
-            if 'real' in [base_esq, base_dir] or op == '/':
-                return 'real'
-            return 'integer'
-    
-        # Operadores div e mod
-        if op in ['div', 'mod']:
-            if base_esq != 'integer' or base_dir != 'integer':
-                raise SemanticError(f"Operador '{op}' requer dois inteiros, mas recebeu {tipo_esq} e {tipo_dir}.")
-            return 'integer'
-    
-        # Operadores relacionais
-        if op in ['=', '<>']:
-            if {base_esq, base_dir} <= {'integer', 'real'}:
-                return 'boolean'
-            if tipo_esq != tipo_dir:
-                raise SemanticError(f"Comparação '{op}' requer operandos compatíveis, mas recebeu {tipo_esq} e {tipo_dir}.")
-            if base_esq not in ['boolean', 'char', 'texto', 'set']:
-                raise SemanticError(f"Operador '{op}' não suportado para tipo {tipo_esq}.")
-            return 'boolean'
-    
-        elif op in ['<', '<=', '>', '>=']:
-            if base_esq == base_dir and base_esq in ['integer','real','char','texto']:
-                return 'boolean'
-            raise SemanticError(
-                f"Operador relacional '{op}' não suportado para tipos {tipo_esq} e {tipo_dir}."
-            )
-    
-        # Operador IN (elemento ∈ conjunto)
-        if op == 'in':
-            if tipo_dir == 'set':
-                elem_type = tipo_dir.lower()
-                if tipo_esq != 'enum':
-                    raise SemanticError(f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}.")
-            else:
-                if not (isinstance(tipo_dir, tuple)):
-                    raise SemanticError(
-                        f"Operador 'in' requer um conjunto do lado direito, mas recebeu {tipo_dir}."
-                    )
-                # 2) extrai o tipo dos elementos do conjunto
-                elem_type = tipo_dir[1]
-                # 3) compara com o tipo do operando da esquerda
-                if tipo_esq != elem_type:
-                    raise SemanticError(
-                        f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}."
-                    )
-            return 'boolean'
-    
-        # Operadores lógicos
-        if op in ['and', 'or']:
-            if base_esq != 'boolean' or base_dir != 'boolean':
-                raise SemanticError(f"Operador lógico '{op}' requer dois boolean, mas recebeu {tipo_esq} e {tipo_dir}.")
-            return 'boolean'
-    
-        raise SemanticError(f"Operador desconhecido '{op}' ou operação não suportada entre {tipo_esq} e {tipo_dir}.")
-    
-
-
-    def visit_if(self, node):
-        _, cond, then_stmt, else_stmt = node
-
-        cond_type = self.visit(cond)
-        if cond_type != 'boolean':
-            raise SemanticError(f"A condição do IF deve ser boolean, mas foi {cond_type}.")
-
-        self.visit(then_stmt)
-        if else_stmt is not None:
-            self.visit(else_stmt)
 
 
 
@@ -447,50 +530,18 @@ class SemanticAnalyzer:
                             raise SemanticError(f"A função '{nl}' não pode receber um argumento do tipo '{sym.type}'.")
                 return None
 
+    
 
-    def visit_function(self, node):
-        # node = ('function', nome, params, return_type, block)
-        _, nome, params, return_type, block = node
-        nl = nome.lower()
+    def visit_if(self, node):
+        _, cond, then_stmt, else_stmt = node
 
-        # 1) verifica duplicação no escopo pai
-        if nl in self.current_scope.symbols:
-            raise SemanticError(f"A função '{nome}' já está definida.")
+        cond_type = self.visit(cond)
+        if cond_type != 'boolean':
+            raise SemanticError(f"A condição do IF deve ser boolean, mas foi {cond_type}.")
 
-        # 2) cria e regista o símbolo da função no escopo actual (pai)
-        func_sym = Symbol(nl, 'function')
-        # converte params AST → lista de (nome, TIPO)
-        lista = []
-        for p in params:                        # p = ('param',[nomes], tipo_node)
-            _, nomes, tipo_node = p
-            tipo_str = self._normalize_type(tipo_node)
-            for id_name in nomes:
-                lista.append((id_name.lower(), tipo_str))
-        func_sym.params = lista
-        # tipo de retorno normalizado
-        func_sym.return_type = self._normalize_type(return_type)
-
-        # define a função no escopo actual
-        self.current_scope.define(nl, func_sym)
-
-        # 3) prepara análise do corpo
-        prev_fn = getattr(self, 'current_function', None)
-        self.current_function = nl
-
-        # abre escopo interno e define só os parâmetros
-        self.current_scope = Scope(self.current_scope)
-        for param_nome, param_tipo in func_sym.params:
-            self.current_scope.define(param_nome.lower(), param_tipo)
-            self.initialized.add(param_nome.lower())
-
-        # analisa corpo
-        self.visit(block)
-
-        # fecha escopo e repõe função corrente
-        self.current_scope = self.current_scope.parent
-        self.current_function = prev_fn
-
-        return func_sym.return_type
+        self.visit(then_stmt)
+        if else_stmt is not None:
+            self.visit(else_stmt)
 
 
 
@@ -519,7 +570,7 @@ class SemanticAnalyzer:
         self.initialized.add(var_name.lower())
         # 3) Processa o corpo do laço
         self.visit(body)
-    
+
 
 
     def visit_while(self, node):
@@ -535,228 +586,7 @@ class SemanticAnalyzer:
 
         # 2) Analisa semanticamente o corpo do laço
         self.visit(body)
-    
 
-
-    def visit_compound(self, node):
-        # node = ('compound', statement_list)
-        _, stmts = node
-
-        # Percorre cada instrução do bloco composto
-        for stmt in stmts:
-            # stmt pode ser None (na regra de statement permite empty)
-            if stmt is not None:
-                self.visit(stmt)
-
-
-
-    def visit_types(self, node):
-        _, type_list = node
-        for name, tipo in type_list:
-            kind = tipo[0].lower()
-            if kind == 'record':
-                # extrai a lista de declarações de campos
-                field_list = tipo[1]
-                # normaliza cada campo
-                campos = {}
-                for _, nomes, campo_tipo_node in field_list:   # nodo ('fields', [nomes], tipo_node)
-                    t_str = self._normalize_type(campo_tipo_node)
-                    for id_name in nomes:
-                        key = id_name.lower()
-                        if key in campos:
-                            raise SemanticError(f"Campo '{id_name}' já definido em record '{name}'.")
-                        campos[key] = t_str
-                # cria símbolo do tipo record, com atributo .fields
-                rec_sym = Symbol(name.lower(), name.lower())
-                rec_sym.fields = campos
-                self.current_scope.define(name.lower(), rec_sym)
-            else:
-                if kind == 'enum':
-                    # os enums continuam a ser um tipo próprio
-                    self.current_scope.define(name.lower(), 'enum')
-                    for e in tipo[1]:
-                        self.current_scope.define(e.lower(), 'enum')
-                        self.initialized.add(e.lower())
-                elif kind == 'subrange':
-                    # subrange → desce ao tipo base (integer)
-                    base_type = self._normalize_type(tipo)   # isto já retorna 'integer'
-                    self.current_scope.define(name.lower(), base_type)
-                else:
-                    if tipo[0].lower() == 'array_type':
-                        lower_node, upper_node = tipo[1] 
-                        # cada limite tem de ser const_expr
-                        if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
-                        if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
-                        # se for id, garante que é constante
-                        for bound in (lower_node, upper_node):
-                            kind = bound[1].lower()
-                            if kind == 'id':
-                                name2 = bound[2].lower()
-                                sym = self.current_scope.resolve(name2)
-                                if sym.kind != 'const':
-                                    raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
-                                if sym.type != 'integer':
-                                     raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
-                            elif kind != 'integer':
-                                raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
-                    type_str = self._normalize_type(tipo)
-                    self.current_scope.define(name.lower(), type_str)
-    
-
-
-    def visit_labels(self, node):
-        _, label_list = node
-
-        for lbl in label_list:
-            key = str(lbl).lower()
-            # se já existir um símbolo com esse nome no mesmo escopo, é duplicado
-            if key in self.current_scope.symbols:
-                raise SemanticError(f"Label '{lbl}' já declarado neste escopo.")
-            # define-o como símbolo de tipo 'label'
-            self.current_scope.symbols[key] = Symbol(key, 'label')
-
-    
-
-    def visit_procedure(self, node):
-        # node = ('procedure', nome, params, block)
-        _, nome, params, block = node
-        nl = nome.lower()
-
-        # 1) verifica duplicação no escopo actual
-        if nl in self.current_scope.symbols:
-            raise SemanticError(f"Procedimento '{nome}' já está definido neste escopo.")
-
-        # 2) cria o símbolo da procedure no escopo actual (pai)
-        proc_sym = Symbol(nl, 'procedure')
-
-        # ── extrai e normaliza os parâmetros, tal como em visit_function
-        lista = []
-        if params != None:
-            for p in params:                  # p = ('param', [nomes], tipo_node)
-                _, nomes, tipo_node = p
-                if tipo_node[0].lower() == 'array_type':
-                        lower_node, upper_node = tipo_node[1] 
-                        # cada limite tem de ser const_expr
-                        if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
-                        if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
-                        # se for id, garante que é constante
-                        for bound in (lower_node, upper_node):
-                            kind = bound[1].lower()
-                            if kind == 'id':
-                                name2 = bound[2].lower()
-                                sym = self.current_scope.resolve(name2)
-                                if sym.kind != 'const':
-                                    raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
-                                if sym.type != 'integer':
-                                     raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
-                            elif kind != 'integer':
-                                raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
-                tipo_str = self._normalize_type(tipo_node)
-                for id_name in nomes:
-                    lista.append((id_name.lower(), tipo_str))
-        proc_sym.params = lista
-
-        # regista a procedure no escopo actual
-        self.current_scope.define(nl, proc_sym)
-
-        # 3) prepara‑te para analisar o corpo
-        prev_proc = getattr(self, 'current_procedure', None)
-        self.current_procedure = nl
-
-        # 4) abre escopo filho e define os parâmetros aí
-        self.current_scope = Scope(self.current_scope)
-        for param_nome, param_tipo in proc_sym.params:
-            self.current_scope.define(param_nome, param_tipo)
-            self.initialized.add(param_nome.lower())
-
-        # 5) visita o bloco (corpo da procedure)
-        self.visit(block)
-
-        # 6) restaura escopo e current_procedure
-        self.current_scope = self.current_scope.parent
-        self.current_procedure = prev_proc
-    
-
-
-    def visit_not(self, node):
-        _, expr = node
-        expr_type = self.visit(expr)
-        if expr_type != 'boolean':
-            raise SemanticError(f"Operador 'not' espera expressão do tipo boolean, mas recebeu {expr_type}.")
-        return 'boolean'
-
-
-
-    def visit_goto(self, node):
-        _, label = node
-        key = str(label).lower()
-        simbolo = self.current_scope.resolve(key)
-        if simbolo is None or simbolo.type != 'label':
-            raise SemanticError(f"GOTO para label '{label}' que não está declarada.")
-    
-
-
-    def visit_label_stmt(self, node):
-        _, label, stmt = node
-        key = str(label).lower()
-
-        simbolo = self.current_scope.resolve(key)
-        if simbolo is None or simbolo.type != 'label':
-            raise SemanticError(f"Label '{label}' não declarada antes de ser usada.")
-
-        self.visit(stmt)
-    
-
-
-    def visit_set_lit(self, node):
-        _, elementos = node
-
-        # se lista estiver vazia, considera um conjunto vazio genérico
-        if not elementos:
-            return ('set', 'unknown')
-
-        # visita todos os elementos e verifica consistência de tipo
-        tipos = [self.visit(elem) for elem in elementos]
-        tipo_base = tipos[0]
-
-        for t in tipos:
-            if t != tipo_base:
-                raise SemanticError(f"Todos os elementos do conjunto devem ter o mesmo tipo, mas encontrou {tipo_base} e {t}.")
-
-        return ('set', tipo_base)
-    
-
-
-    def visit_fmt(self, node):
-        _, expr, width_expr, precision_expr = node
-
-        # 1) Analisa a expressão principal
-        expr_type = self.visit(expr)
-
-        # 2) Width deve ser integer
-        width_type = self.visit(width_expr)
-        if width_type.casefold() != 'integer':
-            raise SemanticError(f"Formato width em '{node}' deve ser INTEGER, mas foi {width_type}.")
-
-        # 3) Se houver precision, também deve ser integer
-        if precision_expr is not None:
-            prec_type = self.visit(precision_expr)
-            if prec_type.casefold() != 'integer':
-                raise SemanticError(f"Formato precision em '{node}' deve ser INTEGER, mas foi {prec_type}.")
-
-        # 4) O resultado do fmt é do mesmo tipo da expr
-        return expr_type
-    
 
 
     def visit_repeat(self, node):
@@ -775,6 +605,38 @@ class SemanticAnalyzer:
                 f"Condição de REPEAT…UNTIL deve ser boolean, mas recebeu {cond_type}."
             )
         
+
+
+    def visit_case(self, node):
+        _, expr_node, case_list = node
+
+        # 1) Analisa a expressão do case e verifica que é ordinal
+        expr_type = self.visit(expr_node).lower()
+        if expr_type not in ('integer', 'char', 'enum'):
+            raise SemanticError(
+                f"Expressão de CASE deve ser ordinal (INTEGER, CHAR ou ENUM), mas é {expr_type}."
+            )
+
+        # 2) Percorre todas as alternativas, validando constantes e semântica interna
+        seen_labels = set()
+        for const_list, stmts in case_list:
+            # cada const_list é lista de nós de const_expr
+            for const_node in const_list:
+                label_type = self.visit(const_node).lower()
+                if label_type != expr_type:
+                    raise SemanticError(
+                        f"Etiqueta de CASE tem tipo {label_type}, mas a expressão é {expr_type}."
+                    )
+                # identifica a constante para detetar duplicados (usa o próprio nó como chave)
+                key = repr(const_node)
+                if key in seen_labels:
+                    raise SemanticError(f"Etiqueta de CASE repetida: {const_node}.")
+                seen_labels.add(key)
+
+            # 3) Analisa semanticamente todas as instruções do ramo
+            for stmt in stmts:
+                self.visit(stmt)
+
 
 
     def visit_with(self, node):
@@ -818,35 +680,190 @@ class SemanticAnalyzer:
 
         # 5) Restaura o escopo anterior
         self.current_scope = old_scope
+
+
+
+    def visit_goto(self, node):
+        _, label = node
+        key = str(label).lower()
+        simbolo = self.current_scope.resolve(key)
+        if simbolo is None or simbolo.type != 'label':
+            raise SemanticError(f"GOTO para label '{label}' que não está declarada.")
+        
+
+
+    def visit_label_stmt(self, node):
+        _, label, stmt = node
+        key = str(label).lower()
+
+        simbolo = self.current_scope.resolve(key)
+        if simbolo is None or simbolo.type != 'label':
+            raise SemanticError(f"Label '{label}' não declarada antes de ser usada.")
+
+        self.visit(stmt)
+
+
+
+    def visit_const(self, node):
+        _, type, _ = node
+        return type
+
+        
+
+    def visit_fmt(self, node):
+        _, expr, width_expr, precision_expr = node
+
+        # 1) Analisa a expressão principal
+        expr_type = self.visit(expr)
+
+        # 2) Width deve ser integer
+        width_type = self.visit(width_expr)
+        if width_type.casefold() != 'integer':
+            raise SemanticError(f"Formato width em '{node}' deve ser INTEGER, mas foi {width_type}.")
+
+        # 3) Se houver precision, também deve ser integer
+        if precision_expr is not None:
+            prec_type = self.visit(precision_expr)
+            if prec_type.casefold() != 'integer':
+                raise SemanticError(f"Formato precision em '{node}' deve ser INTEGER, mas foi {prec_type}.")
+
+        # 4) O resultado do fmt é do mesmo tipo da expr
+        return expr_type
     
 
 
-    def visit_case(self, node):
-        _, expr_node, case_list = node
+    def visit_not(self, node):
+        _, expr = node
+        expr_type = self.visit(expr)
+        if expr_type != 'boolean':
+            raise SemanticError(f"Operador 'not' espera expressão do tipo boolean, mas recebeu {expr_type}.")
+        return 'boolean'
+    
 
-        # 1) Analisa a expressão do case e verifica que é ordinal
-        expr_type = self.visit(expr_node).lower()
-        if expr_type not in ('integer', 'char', 'enum'):
+
+    def visit_set_lit(self, node):
+        _, elementos = node
+        # se lista estiver vazia, considera um conjunto vazio genérico
+        if not elementos:
+            return ('set', 'unknown')
+        # visita todos os elementos e verifica consistência de tipo
+        tipos = [self.visit(elem) for elem in elementos]
+        tipo_base = tipos[0]
+        for t in tipos:
+            if t != tipo_base:
+                raise SemanticError(f"Todos os elementos do conjunto devem ter o mesmo tipo, mas encontrou {tipo_base} e {t}.")
+        return ('set', tipo_base)
+    
+
+
+    def visit_binop(self, node):
+        _, op, esq, dir_ = node
+        op = op.lower()
+        tipo_esq = self.visit(esq)
+        tipo_dir = self.visit(dir_)
+    
+        # Função auxiliar para obter o nome base (e.g. 'set' ou 'integer')
+        def tipo_base(t):
+            return t.lower() if isinstance(t, str) else t[0].lower()
+    
+        base_esq = tipo_base(tipo_esq)
+        base_dir = tipo_base(tipo_dir)
+    
+        # Operadores aritméticos
+        if op in ['+', '-', '*', '/']:
+            if base_esq not in ['integer', 'real'] or base_dir not in ['integer', 'real']:
+                raise SemanticError(f"Operador '{op}' só pode ser aplicado a tipos numéricos, mas recebeu {tipo_esq} e {tipo_dir}.")
+            if 'real' in [base_esq, base_dir] or op == '/':
+                return 'real'
+            return 'integer'
+    
+        # Operadores div e mod
+        if op in ['div', 'mod']:
+            if base_esq != 'integer' or base_dir != 'integer':
+                raise SemanticError(f"Operador '{op}' requer dois inteiros, mas recebeu {tipo_esq} e {tipo_dir}.")
+            return 'integer'
+    
+        # Operadores relacionais
+        if op in ['=', '<>']:
+            if {base_esq, base_dir} <= {'integer', 'real'}:
+                return 'boolean'
+            if tipo_esq != tipo_dir:
+                raise SemanticError(f"Comparação '{op}' requer operandos compatíveis, mas recebeu {tipo_esq} e {tipo_dir}.")
+            if base_esq not in ['boolean', 'char', 'texto', 'set']:
+                raise SemanticError(f"Operador '{op}' não suportado para tipo {tipo_esq}.")
+            return 'boolean'
+    
+        elif op in ['<', '<=', '>', '>=']:
+            if base_esq == base_dir and base_esq in ['integer','real','char','texto']:
+                return 'boolean'
             raise SemanticError(
-                f"Expressão de CASE deve ser ordinal (INTEGER, CHAR ou ENUM), mas é {expr_type}."
+                f"Operador relacional '{op}' não suportado para tipos {tipo_esq} e {tipo_dir}."
             )
-
-        # 2) Percorre todas as alternativas, validando constantes e semântica interna
-        seen_labels = set()
-        for const_list, stmts in case_list:
-            # cada const_list é lista de nós de const_expr
-            for const_node in const_list:
-                label_type = self.visit(const_node).lower()
-                if label_type != expr_type:
+    
+        # Operador IN (elemento ∈ conjunto)
+        if op == 'in':
+            if tipo_dir == 'set':
+                elem_type = tipo_dir.lower()
+                if tipo_esq != 'enum':
+                    raise SemanticError(f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}.")
+            else:
+                if not (isinstance(tipo_dir, tuple)):
                     raise SemanticError(
-                        f"Etiqueta de CASE tem tipo {label_type}, mas a expressão é {expr_type}."
+                        f"Operador 'in' requer um conjunto do lado direito, mas recebeu {tipo_dir}."
                     )
-                # identifica a constante para detetar duplicados (usa o próprio nó como chave)
-                key = repr(const_node)
-                if key in seen_labels:
-                    raise SemanticError(f"Etiqueta de CASE repetida: {const_node}.")
-                seen_labels.add(key)
+                # 2) extrai o tipo dos elementos do conjunto
+                elem_type = tipo_dir[1]
+                # 3) compara com o tipo do operando da esquerda
+                if tipo_esq != elem_type:
+                    raise SemanticError(
+                        f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}."
+                    )
+            return 'boolean'
+    
+        # Operadores lógicos
+        if op in ['and', 'or']:
+            if base_esq != 'boolean' or base_dir != 'boolean':
+                raise SemanticError(f"Operador lógico '{op}' requer dois boolean, mas recebeu {tipo_esq} e {tipo_dir}.")
+            return 'boolean'
+    
+        raise SemanticError(f"Operador desconhecido '{op}' ou operação não suportada entre {tipo_esq} e {tipo_dir}.")
+    
 
-            # 3) Analisa semanticamente todas as instruções do ramo
-            for stmt in stmts:
-                self.visit(stmt)
+
+    def _normalize_type(self, tipo_node):
+        kind = tipo_node[0].lower()
+        if kind == 'simple_type':
+            return tipo_node[1].lower()
+        if kind == 'id_type':
+            sym = self.current_scope.resolve(tipo_node[1].lower())
+            return sym.type
+        if kind == 'array_type':
+            elem_type = self._normalize_type(tipo_node[2])
+            return ('array', elem_type)
+        if kind == 'enum':
+            return 'ENUM'.lower()
+        if kind == 'subrange':
+            return 'integer'.lower()
+        if kind == 'packed':
+            return self._normalize_type(tipo_node[1])
+        if kind == 'short_string':
+            return 'texto'.lower()
+        if kind == 'set':
+            return 'SET'.lower()
+        if kind == 'file':
+            return 'FILE'.lower()
+        if kind == 'record':
+            return 'RECORD'.lower()
+        
+
+
+    
+
+    # def visit_instrucao_composta(self, node):
+    #     _, instrs = node
+    #     for instr in instrs:
+    #         self.visit(instr)
+
+    # def visit_numero(self, node):
+    #     _, valor = node
+    #     return 'real' if '.' in str(valor) else 'integer'    
