@@ -143,7 +143,6 @@ def p_procedure_declaration(p):
 # Diferentes tipos
 def p_type(p):
     '''type : packed_type
-            | short_string
             | simple_type
             | id_type
             | array_type
@@ -158,10 +157,6 @@ def p_packed_type(p):
     'packed_type : PACKED type'
     p[0] = ('packed', p[2])
 
-def p_short_string(p):
-    'short_string : TIPO LBRACKET constant RBRACKET'
-    p[0] = ('short_string', p[1], p[3])
-
 def p_simple_type(p):
     'simple_type : TIPO'
     p[0] = ('simple_type', p[1])
@@ -171,7 +166,7 @@ def p_id_type(p):
     p[0] = ('id_type', p[1])
 
 def p_array_type_range(p):
-    'array_type : ARRAY LBRACKET range_list RBRACKET OF type'
+    'array_type : ARRAY LBRACKET range RBRACKET OF type'
     p[0] = ('array_type', p[3], p[6])
 
 def p_enum_type(p):
@@ -201,14 +196,6 @@ def p_file_type(p):
 
 
 # ----------------------------------------------------------------------------------
-def p_range_list(p):
-    '''range_list : range_list COMMA range
-                  | range'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[3]]
-
 # cada range é um par de CONSTANT .. CONSTANT
 def p_range(p):
     'range : const_expr RANGE const_expr'
@@ -342,7 +329,7 @@ def p_assignment(p):
 
 # Variáveis
 def p_variable(p):
-    '''variable : variable LBRACKET expression_list RBRACKET
+    '''variable : variable LBRACKET expression RBRACKET
                 | variable DOT ID
                 | ID'''
     if len(p) == 2:

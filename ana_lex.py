@@ -78,147 +78,147 @@ tokens = (
 # Pascal Standard é case-insensitive, usamos re.IGNORECASE ao construir o lexer
 
 def t_TIPO(t):
-    r'(\binteger\b|\breal\b|\bboolean\b|\bchar\b)'
+    r'\b([iI][nN][tT][eE][gG][eE][rR]|\b[rR][eE][aA][lL]|\b[bB][oO][oO][lL][eE][aA][nN]|\b[cC][hH][aA][rR])\b'
     return t
 
 def t_BOOLEAN(t):
-    r'(\btrue\b|\bfalse\b)'
+    r'\b([tT][rR][uU][eE]|\b[fF][aA][lL][sS][eE])\b'
     return t
 
 def t_AND(t):      
-    r'\band\b'       
+    r'\b([aA][nN][dD])\b'       
     return t
 
 def t_ARRAY(t):    
-    r'\barray\b'     
+    r'\b([aA][rR][rR][aA][yY])\b'     
     return t
 
 def t_BEGIN(t):    
-    r'\bbegin\b'    
+    r'\b([bB][eE][gG][iI][nN])\b'    
     return t
 
 def t_CASE(t):     
-    r'\bcase\b'     
+    r'\b([cC][aA][sS][eE])\b'     
     return t
 
 def t_CONST(t):    
-    r'\bconst\b'    
+    r'\b([cC][oO][nN][sS][tT])\b'    
     return t
 
 def t_DIV(t):      
-    r'\bdiv\b'      
+    r'\b([dD][iI][vV])\b'      
     return t
 
 def t_DOWNTO(t):   
-    r'\bdownto\b'   
+    r'\b([dD][oO][wW][nN][tT][oO])\b'   
     return t
 
 def t_DO(t):       
-    r'\bdo\b'       
+    r'\b([dD][oO])\b'       
     return t
 
 def t_ELSE(t):     
-    r'\belse\b'     
+    r'\b([eE][lL][sS][eE])\b'     
     return t
 
 def t_END(t):      
-    r'\bend\b'      
+    r'\b([eE][nN][dD])\b'      
     return t
 
 def t_FILE(t):     
-    r'\bfile\b'     
+    r'\b([fF][iI][lL][eE])\b'     
     return t
 
 def t_FOR(t):      
-    r'\bfor\b'      
+    r'\b([fF][oO][rR])\b'      
     return t
 
 def t_FUNCTION(t): 
-    r'\bfunction\b' 
+    r'\b([fF][uU][nN][cC][tT][iI][oO][nN])\b' 
     return t
 
 def t_GOTO(t):     
-    r'\bgoto\b'     
+    r'\b([gG][oO][tT][oO])\b'     
     return t
 
 def t_IF(t):       
-    r'\bif\b'       
+    r'\b([iI][fF])\b'       
     return t
 
 def t_IN(t):       
-    r'\bin\b'       
+    r'\b([iI][nN])\b'       
     return t
 
 def t_LABEL(t):    
-    r'\blabel\b'    
+    r'\b([lL][aA][bB][eE][lL])\b'    
     return t
 
 def t_MOD(t):      
-    r'\bmod\b'      
+    r'\b([mM][oO][dD])\b'      
     return t
 
 def t_NOT(t):      
-    r'\bnot\b'      
+    r'\b([nN][oO][tT])\b'      
     return t
 
 def t_OF(t):       
-    r'\bof\b'       
+    r'\b([oO][fF])\b'       
     return t
 
 def t_OR(t):       
-    r'\bor\b'       
+    r'\b([oO][rR])\b'       
     return t
 
 def t_PACKED(t):   
-    r'\bpacked\b'   
+    r'\b([pP][aA][cC][kK][eE][dD])\b'   
     return t
 
 def t_PROCEDURE(t):
-    r'\bprocedure\b'
+    r'\b([pP][rR][oO][cC][eE][dD][uU][rR][eE])\b'
     return t
 
 def t_PROGRAM(t):  
-    r'\bprogram\b'  
+    r'\b([pP][rR][oO][gG][rR][aA][mM])\b'  
     return t
 
 def t_RECORD(t):   
-    r'\brecord\b'
+    r'\b([rR][eE][cC][oO][rR][dD])\b'
     return t
 
 def t_REPEAT(t):   
-    r'\brepeat\b'   
+    r'\b([rR][eE][pP][eE][aA][tT])\b'   
     return t
 
 def t_SET(t):      
-    r'\bset\b'      
+    r'\b([sS][eE][tT])\b'      
     return t
 
 def t_THEN(t):     
-    r'\bthen\b'     
+    r'\b([tT][hH][eE][nN])\b'     
     return t
 
 def t_TO(t):       
-    r'\bto\b'       
+    r'\b([tT][oO])\b'       
     return t
 
 def t_TYPE(t):     
-    r'\btype\b'     
+    r'\b([tT][yY][pP][eE])\b'     
     return t
 
 def t_UNTIL(t):    
-    r'\buntil\b'    
+    r'\b([uU][nN][tT][iI][lL])\b'    
     return t
 
 def t_VAR(t):      
-    r'\bvar\b'      
+    r'\b([vV][aA][rR])\b'      
     return t
 
 def t_WHILE(t):    
-    r'\bwhile\b'    
+    r'\b([wW][hH][iI][lL][eE])\b'    
     return t
 
 def t_WITH(t):     
-    r'\bwith\b'     
+    r'\b([wW][iI][tT][hH])\b'     
     return t
 
 # Operadores e símbolos simples
@@ -299,4 +299,4 @@ def t_error(t):
     t.lexer.skip(1)
 
 def build_lexer(**kwargs):
-    return lex.lex(module=sys.modules[__name__], reflags=re.IGNORECASE, **kwargs)
+    return lex.lex(module=sys.modules[__name__], **kwargs)
