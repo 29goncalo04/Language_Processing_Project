@@ -25,7 +25,6 @@ tokens = (
     'IN',
     'LABEL',
     'MOD',
-    'NIL',
     'NOT',
     'OF',
     'OR',
@@ -156,10 +155,6 @@ def t_LABEL(t):
 
 def t_MOD(t):      
     r'\bmod\b'      
-    return t
-
-def t_NIL(t):      
-    r'\bnil\b'      
     return t
 
 def t_NOT(t):      

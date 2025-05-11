@@ -220,8 +220,7 @@ def p_const_expr(p):
                   | BOOLEAN
                   | CHAR
                   | TEXTO
-                  | ID
-                  | NIL'''
+                  | ID'''
     p[0] = ('const_expr', p.slice[1].type.lower(), p[1])
 
 
@@ -462,8 +461,7 @@ def p_constant(p):
                 | REAL
                 | BOOLEAN
                 | CHAR
-                | TEXTO
-                | NIL'''
+                | TEXTO'''
     p[0] = ('const', p.slice[1].type.lower(), p[1])
 
 

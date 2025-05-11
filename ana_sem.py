@@ -235,6 +235,7 @@ class SemanticAnalyzer:
         # se passou no teste, resolve e devolve o tipo
         sym = self.current_scope.resolve(key)
         return sym.type
+        #
 
     def visit_array(self, node):
         _, base, indices = node
@@ -406,7 +407,7 @@ class SemanticAnalyzer:
             if t1.casefold() != 'file':
                 raise SemanticError(f"Argumento 1 de 'assign' deve ser FILE, mas recebeu {t1}.")
             # argumento 2
-            if argumentos[1] != 'var':
+            if argumentos[1][0] != 'var':
                 t2 = self.visit(argumentos[1])
             else:
                 t2 = self.current_scope.resolve(argumentos[1][1].lower()).type
@@ -496,6 +497,8 @@ class SemanticAnalyzer:
                             indices = a[2]  # Os índices estão em 'a[2]'
                             for index in indices:
                                 index_type = self.visit(index)  # Processa o índice
+                                if index_type != 'integer':
+                                    raise SemanticError(f"O indíce do array tem de ser do tipo INTEGER mas é do tipo '{index_type}'.")
                         return sym.type  # Retorna o tipo da variável do tipo array
                     
                     else:
@@ -504,6 +507,14 @@ class SemanticAnalyzer:
                 else:
                     # Se 'a' não for uma tupla, apenas visita o argumento
                     self.current_scope.resolve(a[1].lower()).type
+            if nl in ('write', 'writeln', 'rewrite'):
+                for a in argumentos:
+                    if a[0] != 'var':
+                        self.visit(a)
+                    else:
+                        key = a[1].lower()
+                        sym = self.current_scope.resolve(key)
+                return None
 
 
     def visit_function(self, node):
