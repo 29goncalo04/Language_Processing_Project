@@ -45,35 +45,13 @@ class SemanticAnalyzer:
         self._init_builtins()
     
     def _init_builtins(self):
-        for proc in ['write', 'writeln', 'read', 'readln', 'rewrite']:
+        for proc in ['write', 'writeln', 'read', 'readln']:
             self.global_scope.symbols[proc] = Symbol(proc, 'procedure')
         # length: function que recebe um array e devolve integer
         length_sym = Symbol('length','function')
         length_sym.params = [('arr','array')]
         length_sym.return_type = 'integer'
         self.global_scope.symbols['length'] = length_sym
-
-        # assign(fileVar, fileName)
-        assign_sym = Symbol('assign', 'procedure')
-        assign_sym.params = [
-            ('filevar', 'file'),
-            ('filename', [('array', 'char'), 'texto'])
-        ]
-        self.global_scope.symbols['assign'] = assign_sym
-
-        high_sym = Symbol('high','function')
-        high_sym.params = [('arr','array')]
-        high_sym.return_type = 'integer'
-        self.global_scope.define('high', high_sym)
-
-        close_sym = Symbol('close','procedure')
-        close_sym.params = [('filevar','file')]
-        self.global_scope.define('close', close_sym)
-
-        chr_sym = Symbol('chr','function')
-        chr_sym.params = [('code','integer')]
-        chr_sym.return_type = 'char'
-        self.global_scope.define('chr', chr_sym)
 
         real_sym = Symbol('real', 'function')
         real_sym.params = [('x', 'integer')]  # Cast de integer para real
@@ -123,28 +101,27 @@ class SemanticAnalyzer:
     def visit_vars(self, node):
         _, nomes, tipo = node
         if tipo[0].lower() == 'array_type':
-            bounds_list = tipo[1]
-            for lower_node, upper_node in bounds_list:
-                # cada limite tem de ser const_expr
-                if lower_node[0].lower() != 'const_expr':
-                    raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
-                if upper_node[0].lower() != 'const_expr':
-                    raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
-                # se for id, garante que é constante
-                for bound in (lower_node, upper_node):
-                    kind = bound[1].lower()
-                    if kind == 'id':
-                        name = bound[2].lower()
-                        sym = self.current_scope.resolve(name)
-                        if sym.kind != 'const':
-                            raise SemanticError(
-                                f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
-                        if sym.type != 'integer':
-                                         raise SemanticError(
-                                             f"Limite de array deve ser do tipo INTEGER, mas '{name}' é do tipo {sym.type}.")
-                    elif kind != 'integer':
+            lower_node, upper_node = tipo[1] 
+            # cada limite tem de ser const_expr
+            if lower_node[0].lower() != 'const_expr':
+                raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+            if upper_node[0].lower() != 'const_expr':
+                raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+            # se for id, garante que é constante
+            for bound in (lower_node, upper_node):
+                kind = bound[1].lower()
+                if kind == 'id':
+                    name = bound[2].lower()
+                    sym = self.current_scope.resolve(name)
+                    if sym.kind != 'const':
                         raise SemanticError(
-                            f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                            f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                    if sym.type != 'integer':
+                                     raise SemanticError(
+                                         f"Limite de array deve ser do tipo INTEGER, mas '{name}' é do tipo {sym.type}.")
+                elif kind != 'integer':
+                    raise SemanticError(
+                        f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
         # define variáveis
         type_str = self._normalize_type(tipo)
         for nome in nomes:
@@ -237,17 +214,16 @@ class SemanticAnalyzer:
         #
 
     def visit_array(self, node):
-        _, base, indices = node
+        _, base, indice = node
         key = base[1].lower()
         base_type = self.current_scope.resolve(key).type
 
         if not (isinstance(base_type, tuple) and base_type[0] == 'array'):
             raise SemanticError(f"Tentativa de indexar uma variável que não é um array: {base_type}")
 
-        for idx_expr in indices:
-            idx_type = self.visit(idx_expr)
-            if idx_type != 'integer':
-                raise SemanticError(f"Índice de array deve ser INTEGER, mas recebeu {idx_type}.")
+        idx_type = self.visit(indice)
+        if idx_type != 'integer':
+            raise SemanticError(f"Índice de array deve ser INTEGER, mas recebeu {idx_type}.")
 
         return base_type[1]  # tipo do elemento do array
 
@@ -392,62 +368,7 @@ class SemanticAnalyzer:
             if not (isinstance(t, tuple) and t[0] == 'array'):
                 raise SemanticError(f"Função 'length' requer array, mas recebeu {t}.")
             return 'integer'
-
-        if nl == 'assign':
-            if len(argumentos) != 2:
-                raise SemanticError(f"Procedure 'assign' espera 2 argumentos, mas recebeu {len(argumentos)}.")
-            # argumento 1
-            if argumentos[0][0] != 'var':
-                t1 = self.visit(argumentos[0])
-            else:
-                t1 = self.current_scope.resolve(argumentos[0][1].lower()).type
-            if t1.casefold() != 'file':
-                raise SemanticError(f"Argumento 1 de 'assign' deve ser FILE, mas recebeu {t1}.")
-            # argumento 2
-            if argumentos[1][0] != 'var':
-                t2 = self.visit(argumentos[1])
-            else:
-                t2 = self.current_scope.resolve(argumentos[1][1].lower()).type
-            if not (
-                (isinstance(t2, tuple) and t2 == ('array','char'))
-                or (isinstance(t2, str) and t2 == 'texto')
-            ):
-                raise SemanticError(f"Argumento 2 de 'assign' deve ser TEXTO, mas recebeu {t2}.")
-            return None
-        
-        if nl == 'high':
-            if len(argumentos) != 1:
-                raise SemanticError(f"Função 'high' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            if argumentos[0] != 'var':
-                t = self.visit(argumentos[0])
-            else:
-                t = self.current_scope.resolve(argumentos[0][1].lower()).type
-            if not (isinstance(t, tuple) and t[0].casefold() == 'array'):
-                raise SemanticError(f"Função 'high' requer array, mas recebeu {t}.")
-            return 'integer'
-        
-        if nl == 'close':
-            if len(argumentos) != 1:
-                raise SemanticError(f"Procedure 'close' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            if argumentos[0][0] != 'var':
-                t = self.visit(argumentos[0])
-            else:
-                t = self.current_scope.resolve(argumentos[0][1].lower()).type
-            if t.casefold() != 'file':
-                raise SemanticError(f"Argumento de 'close' deve ser FILE, mas recebeu {t}.")
-            return None
-        
-        if nl == 'chr':
-            if len(argumentos) != 1:
-                raise SemanticError(f"Função 'chr' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            if argumentos[0] != 'var':
-                t = self.visit(argumentos[0])
-            else:
-                t = self.current_scope.resolve(argumentos[0][1].lower()).type
-            if t.casefold() != 'integer':
-                raise SemanticError(f"Argumento de 'chr' deve ser INTEGER, mas recebeu {t}.")
-            return 'char'
-
+                        
         simbolo = self.current_scope.resolve(nl)
         if hasattr(simbolo, 'params'):
             if len(argumentos) != len(simbolo.params):
@@ -491,11 +412,10 @@ class SemanticAnalyzer:
 
                         # Verificar se há um terceiro elemento que representa os índices
                         if len(a) > 2:  # Caso haja índices
-                            indices = a[2]  # Os índices estão em 'a[2]'
-                            for index in indices:
-                                index_type = self.visit(index)  # Processa o índice
-                                if index_type != 'integer':
-                                    raise SemanticError(f"O indíce do array tem de ser do tipo INTEGER mas é do tipo '{index_type}'.")
+                            index = a[2]  # Os índices estão em 'a[2]'
+                            index_type = self.visit(index)  # Processa o índice
+                            if index_type != 'integer':
+                                raise SemanticError(f"O índice do array tem de ser do tipo INTEGER mas é do tipo '{index_type}'.")
                         return sym.type  # Retorna o tipo da variável do tipo array
                     
                     else:
@@ -504,7 +424,7 @@ class SemanticAnalyzer:
                 else:
                     # Se 'a' não for uma tupla, apenas visita o argumento
                     self.current_scope.resolve(a[1].lower()).type
-            if nl in ('write', 'writeln', 'rewrite'):
+            if nl in ('write', 'writeln'):
                 for a in argumentos:
                     if a[0] != 'var':
                         self.visit(a)
@@ -648,28 +568,27 @@ class SemanticAnalyzer:
                     self.current_scope.define(name.lower(), base_type)
                 else:
                     if tipo[0].lower() == 'array_type':
-                        bounds_list = tipo[1]
-                        for lower_node, upper_node in bounds_list:
-                            # cada limite tem de ser const_expr
-                            if lower_node[0].lower() != 'const_expr':
-                                raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
-                            if upper_node[0].lower() != 'const_expr':
-                                raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
-                            # se for id, garante que é constante
-                            for bound in (lower_node, upper_node):
-                                kind = bound[1].lower()
-                                if kind == 'id':
-                                    name2 = bound[2].lower()
-                                    sym = self.current_scope.resolve(name2)
-                                    if sym.kind != 'const':
-                                        raise SemanticError(
-                                            f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
-                                    if sym.type != 'integer':
-                                         raise SemanticError(
-                                             f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
-                                elif kind != 'integer':
+                        lower_node, upper_node = tipo[1] 
+                        # cada limite tem de ser const_expr
+                        if lower_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                        if upper_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                        # se for id, garante que é constante
+                        for bound in (lower_node, upper_node):
+                            kind = bound[1].lower()
+                            if kind == 'id':
+                                name2 = bound[2].lower()
+                                sym = self.current_scope.resolve(name2)
+                                if sym.kind != 'const':
                                     raise SemanticError(
-                                        f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                if sym.type != 'integer':
+                                     raise SemanticError(
+                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                            elif kind != 'integer':
+                                raise SemanticError(
+                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
                     type_str = self._normalize_type(tipo)
                     self.current_scope.define(name.lower(), type_str)
     
@@ -705,28 +624,27 @@ class SemanticAnalyzer:
         for p in params:                  # p = ('param', [nomes], tipo_node)
             _, nomes, tipo_node = p
             if tipo_node[0].lower() == 'array_type':
-                    bounds_list = tipo_node[1]
-                    for lower_node, upper_node in bounds_list:
-                        # cada limite tem de ser const_expr
-                        if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
-                        if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
-                        # se for id, garante que é constante
-                        for bound in (lower_node, upper_node):
-                            kind = bound[1].lower()
-                            if kind == 'id':
-                                name2 = bound[2].lower()
-                                sym = self.current_scope.resolve(name2)
-                                if sym.kind != 'const':
-                                    raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
-                                if sym.type != 'integer':
-                                     raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
-                            elif kind != 'integer':
+                    lower_node, upper_node = tipo_node[1] 
+                    # cada limite tem de ser const_expr
+                    if lower_node[0].lower() != 'const_expr':
+                        raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                    if upper_node[0].lower() != 'const_expr':
+                        raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                    # se for id, garante que é constante
+                    for bound in (lower_node, upper_node):
+                        kind = bound[1].lower()
+                        if kind == 'id':
+                            name2 = bound[2].lower()
+                            sym = self.current_scope.resolve(name2)
+                            if sym.kind != 'const':
                                 raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                                    f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                            if sym.type != 'integer':
+                                 raise SemanticError(
+                                     f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                        elif kind != 'integer':
+                            raise SemanticError(
+                                f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
             tipo_str = self._normalize_type(tipo_node)
             for id_name in nomes:
                 lista.append((id_name.lower(), tipo_str))
