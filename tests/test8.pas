@@ -22,7 +22,7 @@ var
     valor: integer;
 begin
     writeln('Introduza uma string binária:');
-    readln(bin);
+    readln(bin[1]);
     valor := BinToInt(bin);
     
     writeln('O valor inteiro correspondente é: ', valor);

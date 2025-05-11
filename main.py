@@ -1,7 +1,7 @@
 import sys
 import os
-from ana_lex import build_lexer
 from ana_sin import parse
+from ana_sem import*
 
 from pprint import PrettyPrinter #remover depois 
 
@@ -26,9 +26,18 @@ def main():
 
     # for token in lexer:
     #     print(f"{token.type}({token.value}) na linha {token.lineno}")
-    result = parse(codigo)
-    pp = PrettyPrinter(width=80, indent=4)
-    pp.pprint(result)
+
+    try:
+        result = parse(codigo)
+        pp = PrettyPrinter(width=80, indent=4)
+        pp.pprint(result)
+        if result!=None:
+            analyzer = SemanticAnalyzer()
+            analyzer.analyze(result)
+            print("Análise semântica concluída com sucesso.")
+    except SemanticError as e:
+        print(e)
+
 
 if __name__ == "__main__":
     main()

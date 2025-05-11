@@ -6,7 +6,7 @@ var
     i, valor, potencia: integer;
 begin
     writeln('Introduza uma string binária:');
-    readln(bin);
+    readln(bin[1]);
     
     valor := 0;
     potencia := 1;

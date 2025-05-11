@@ -1,38 +1,67 @@
-program ComplexExamplePure;
+program DemoPascalISO7185;
 
+{ Constantes e arrays empacotados }
 const
-  MAXPESSOAS = 5;
-  MAXLIST = 5;
+  Max = 10;
+  Greeting = 'Olá';
 
+{ Definições de tipos }
 type
-  string = array[1..100] of CHAR;
-  TScore = 0..100;
-
-  TDayOfWeek = (Segunda, Terca, Quarta, Quinta, Sexta, Sabado, Domingo);
-
-  TCharSet = set of Char;
-
-  TPessoa = record
-    Nome: char[50];
-    Idade: 1..120;
-    Pontuacao: TScore;
-    DiaFavorito: TDayOfWeek;
-  end;
-
-  TIntArray = array[1..MAXLIST] of Integer;
-
-  TMatrix = array[1..3, 1..3] of Real;
-
-  TPessoaFile = file of TPessoa;
-
+  SubRange  = 1..Max;                  { subrange }
+  MyEnum    = (Low, Medium, High);     { enumeração }
+  Day       = (Mon, Tue, Wed, Thu, Fri, Sat, Sun);
+  DaySet    = set of Day;              { conjunto de valores enumerados }
+  IntArray  = array[1..Max] of integer;
+  RecType   = record                    { registo }
+               number: integer;
+               flag: boolean;
+             end;
+  
+{ Variáveis globais }
 var
-  Pessoas: array[1..MAXPESSOAS] of TPessoa;
-  Lista: TIntArray;
-  LenList: Integer;
-  M: TMatrix;
-  i: Integer;
+  i      : SubRange;
+  j      : integer;
+  arr    : IntArray;
+  enumv  : MyEnum;
+  daysetv: DaySet;
+  rec    : RecType;
+  c      : char;
+label
+  100, 200;                     { rótulos + goto }
 
-function Factorial(n: Integer): Integer;
+{ Função para somar todos os elementos de um array }
+function SumArray(a: IntArray): integer;
+var
+  idx: SubRange;
+  total: integer;
+begin
+  total := 0;
+  for idx := 1 to 10 do
+    total := total + a[idx];
+  SumArray := total;
+end;
+
+{ Procedimento para preencher um array com quadrados }
+procedure FillArray(var a: IntArray);
+var
+  idx: SubRange;
+begin
+  for idx := 1 to 10 do
+    a[idx] := idx * idx;
+end;
+
+{ Procedimento que demonstra uso de with e registos }
+procedure RecordDemo(var r: RecType);
+begin
+  with r do
+  begin
+    number := 3 + 1;
+    flag   := not false;
+  end;
+end;
+
+{ Função recursiva para factorial }
+function Factorial(n: integer): integer;
 begin
   if n <= 1 then
     Factorial := 1
@@ -40,90 +69,48 @@ begin
     Factorial := n * Factorial(n - 1);
 end;
 
-function Fibonacci(n: Integer): Integer;
-begin
-  if n in [0,1] then
-    Fibonacci := n
-  else
-    Fibonacci := Fibonacci(n - 1) + Fibonacci(n - 2);
-end;
+begin { Main }
+100:
+  writeln('*** Início do Demo Pascal ISO 7185 ***');
 
-procedure InitArrayList(var A: TIntArray; var Len: Integer; m: Integer);
-var
-  k: Integer;
-begin
-  if m > MAXLIST then
-    Len := MAXLIST
-  else
-    Len := m;
-  for k := 1 to Len do
-    A[k] := k;
-end;
+  { Trabalhar com array e funções }
+  FillArray(arr);
+  writeln('Conteúdos do array:');
+  for i := 1 to 10 do
+    writeln(' arr[', i, '] = ', arr[i]);
+  j := SumArray(arr);
+  writeln('Soma do array = ', j);
 
-procedure PrintArrayList(const A: TIntArray; Len: Integer);
-var
-  idx: Integer;
-begin
-  for idx := 1 to Len do
-    Write(A[idx], ' ');
-  Writeln;
-end;
+  { Registo e with }
+  {rec.number := 10;
+  rec.flag   := false;
+  RecordDemo(rec);
+  writeln('Rec.number = ', rec.number, ', flag = ', rec.flag);}
 
-procedure PrintMatrix(const A: TMatrix);
-var
-  r, c: Integer;
-begin
-  for r := 1 to 3 do
-  begin
-    for c := 1 to 3 do
-      Write(A[r,c]:8:2);
-    Writeln;
-  end;
-end;
-
-procedure InitMatrix(var A: TMatrix);
-var
-  r, c: Integer;
-begin
-  for r := 1 to 3 do
-    for c := 1 to 3 do
-      A[r,c] := r * 0.1 + c * 0.2;
-end;
-
-procedure SavePessoas(const FileName: string; const Arr: array[1..10] of TPessoa);
-var
-  F: TPessoaFile;
-  j: Integer;
-begin
-  Assign(F, FileName);
-  Rewrite(F);
-  for j := 0 to High(Arr) do
-    Write(F, Arr[j]);
-  Close(F);
-end;
-
-begin
-
-  for i := 1 to MAXPESSOAS do
-  begin
-    Pessoas[i].Idade := 20 + i;
-    Pessoas[i].Pontuacao := i * 10;
-    Pessoas[i].DiaFavorito := TDayOfWeek((i - 1) mod 7);
+  { Enumerações e case }
+  {enumv := High;}
+  case enumv of
+    Low   : writeln('Enumeração: Low');
+    Medium: writeln('Enumeração: Medium');
+    High  : writeln('Enumeração: High');
   end;
 
-  Writeln('Factorial de 5 = ', Factorial(5));
-  Writeln('Fibonacci de 10 = ', Fibonacci(10));
+  { Conjuntos }
+  daysetv := [Mon, Wed, Fri];
+  if Mon in daysetv then
+    writeln('Segunda-feira está no conjunto');
 
-  InitArrayList(Lista, LenList, 5);
-  Write('"Lista" em array: ');
-  PrintArrayList(Lista, LenList);
+  { Factorial }
+  j := Factorial(5);
+  writeln('Factorial de 5 = ', j);
 
-  InitMatrix(M);
-  Writeln('Matriz 3x3:');
-  PrintMatrix(M);
+  { Carácter e repeat…until }
+  writeln(Greeting);
+  repeat
+    writeln('Introduz um carácter (X para sair):');
+    readln(c);
+  until c = 'X';
 
-  SavePessoas('pessoas.dat', Pessoas);
-  Writeln('Ficheiro pessoas.dat gravado com sucesso.');
-
-  Readln;
+  writeln('A terminar o Demo');
+200:
 end.

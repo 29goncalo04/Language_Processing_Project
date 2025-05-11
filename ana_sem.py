@@ -748,3 +748,79 @@ class SemanticAnalyzer:
             raise SemanticError(
                 f"Condição de REPEAT…UNTIL deve ser boolean, mas recebeu {cond_type}."
             )
+        
+
+
+    def visit_with(self, node):
+        _, var_list, stmt = node
+
+        # 1) Prepara um novo escopo filho onde vamos introduzir os campos
+        old_scope = self.current_scope
+        with_scope = Scope(parent=old_scope)
+
+        # 2) Para cada variável em WITH, extrai os campos do seu tipo record
+        for var_node in var_list:
+            # só suportamos variáveis simples aqui
+            if var_node[0].lower() != 'var':
+                raise SemanticError(f"WITH só suporta variáveis simples, mas recebeu {var_node[0]!r}.")
+            var_name = var_node[1].lower()
+
+            # resolve a variável no escopo anterior
+            sym = old_scope.resolve(var_name)
+            # obtém o nome do tipo, que deve ser um record definido em visit_types
+            type_name = sym.type.lower()
+            type_sym = old_scope.resolve(type_name)
+
+            # valida que é efectivamente um record
+            if not hasattr(type_sym, 'fields'):
+                raise SemanticError(
+                    f"Variável '{var_node[1]}' em WITH não é um record, mas tipo '{sym.type}'."
+                )
+
+            # define cada campo no escopo WITH
+            for field_name, field_type in type_sym.fields.items():
+                # field_name já está em minúsculas na definição de fields
+                with_scope.define(field_name,
+                                  field_type,
+                                  kind='var')
+
+        # 3) Passa a usar o escopo alargado dentro do bloco WITH
+        self.current_scope = with_scope
+
+        # 4) Analisa semanticamente o statement interno
+        self.visit(stmt)
+
+        # 5) Restaura o escopo anterior
+        self.current_scope = old_scope
+    
+
+
+    def visit_case(self, node):
+        _, expr_node, case_list = node
+
+        # 1) Analisa a expressão do case e verifica que é ordinal
+        expr_type = self.visit(expr_node).lower()
+        if expr_type not in ('integer', 'char', 'enum'):
+            raise SemanticError(
+                f"Expressão de CASE deve ser ordinal (INTEGER, CHAR ou ENUM), mas é {expr_type}."
+            )
+
+        # 2) Percorre todas as alternativas, validando constantes e semântica interna
+        seen_labels = set()
+        for const_list, stmts in case_list:
+            # cada const_list é lista de nós de const_expr
+            for const_node in const_list:
+                label_type = self.visit(const_node).lower()
+                if label_type != expr_type:
+                    raise SemanticError(
+                        f"Etiqueta de CASE tem tipo {label_type}, mas a expressão é {expr_type}."
+                    )
+                # identifica a constante para detetar duplicados (usa o próprio nó como chave)
+                key = repr(const_node)
+                if key in seen_labels:
+                    raise SemanticError(f"Etiqueta de CASE repetida: {const_node}.")
+                seen_labels.add(key)
+
+            # 3) Analisa semanticamente todas as instruções do ramo
+            for stmt in stmts:
+                self.visit(stmt)
