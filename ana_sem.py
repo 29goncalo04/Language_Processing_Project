@@ -478,8 +478,11 @@ class SemanticAnalyzer:
                         _, nome = a  # Espera-se que 'a' seja uma tupla do tipo ('var', 'nome')
                         key = nome.lower()
                         sym = self.current_scope.resolve(key)
-                        self.initialized.add(key)
-                        return sym.type
+                        if sym.type != ('array', 'integer'):
+                            self.initialized.add(key)
+                            return sym.type
+                        else:
+                            raise SemanticError(f"A função '{simbolo.name}' não pode receber um argumento do tipo '{sym.type[0]}'.")
 
                     elif tipo == 'array':
                         # Caso seja um array, o segundo elemento é uma tupla com a variável
@@ -494,6 +497,9 @@ class SemanticAnalyzer:
                             for index in indices:
                                 index_type = self.visit(index)  # Processa o índice
                         return sym.type  # Retorna o tipo da variável do tipo array
+                    
+                    else:
+                        raise SemanticError(f"A função '{simbolo.name}' não pode receber um argumento do tipo '{tipo}'.")
 
                 else:
                     # Se 'a' não for uma tupla, apenas visita o argumento
