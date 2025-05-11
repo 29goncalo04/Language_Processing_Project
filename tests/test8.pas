@@ -7,7 +7,7 @@ begin
     valor := 0;
     potencia := 1;
 
-    for i := length(bin) downto 1 do
+    for i := 100 downto 1 do
     begin
         if bin[i] = '1' then
             valor := valor + potencia;

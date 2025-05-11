@@ -47,11 +47,6 @@ class SemanticAnalyzer:
     def _init_builtins(self):
         for proc in ['write', 'writeln', 'read', 'readln']:
             self.global_scope.symbols[proc] = Symbol(proc, 'procedure')
-        # length: function que recebe um array e devolve integer
-        length_sym = Symbol('length','function')
-        length_sym.params = [('arr','array')]
-        length_sym.return_type = 'integer'
-        self.global_scope.symbols['length'] = length_sym
 
         real_sym = Symbol('real', 'function')
         real_sym.params = [('x', 'integer')]  # Cast de integer para real
@@ -356,18 +351,6 @@ class SemanticAnalyzer:
             if nl == 'real' and at not in ('integer','real'):
                 raise SemanticError(f"Cast real({at}) inválido; só integer ou real.")
             return nl   # devolve o tipo do cast
-
-        # caso especial length(array)
-        if nl == 'length':
-            if len(argumentos) != 1:
-                raise SemanticError(f"Função 'length' espera 1 argumento, mas recebeu {len(argumentos)}.")
-            if argumentos[0] != 'var':
-                t = self.visit(argumentos[0])
-            else:
-                t = self.current_scope.resolve(argumentos[0][1].lower()).type
-            if not (isinstance(t, tuple) and t[0] == 'array'):
-                raise SemanticError(f"Função 'length' requer array, mas recebeu {t}.")
-            return 'integer'
                         
         simbolo = self.current_scope.resolve(nl)
         if hasattr(simbolo, 'params'):
@@ -397,7 +380,7 @@ class SemanticAnalyzer:
                         _, nome = a  # Espera-se que 'a' seja uma tupla do tipo ('var', 'nome')
                         key = nome.lower()
                         sym = self.current_scope.resolve(key)
-                        if sym.type != ('array', 'integer'):
+                        if sym.type[0] != ('array'):
                             self.initialized.add(key)
                             return sym.type
                         else:
