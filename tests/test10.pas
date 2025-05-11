@@ -82,13 +82,13 @@ begin { Main }
   writeln('Soma do array = ', j);
 
   { Registo e with }
-  {rec.number := 10;
+  rec.number := 10;
   rec.flag   := false;
   RecordDemo(rec);
-  writeln('Rec.number = ', rec.number, ', flag = ', rec.flag);}
+  writeln('Rec.number = ', rec.number, ', flag = ', rec.flag);
 
   { Enumerações e case }
-  {enumv := High;}
+  enumv := High;
   case enumv of
     Low   : writeln('Enumeração: Low');
     Medium: writeln('Enumeração: Medium');
@@ -105,7 +105,7 @@ begin { Main }
   writeln('Factorial de 5 = ', j);
 
   { Carácter e repeat…until }
-  writeln(Greeting);
+  writeln('Olá');
   repeat
     writeln('Introduz um carácter (X para sair):');
     readln(c);

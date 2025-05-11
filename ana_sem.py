@@ -190,6 +190,8 @@ class SemanticAnalyzer:
         else:
             var_type = self.visit(var_node)
         expr_type = self.visit(expr)
+        if isinstance(expr_type, tuple):
+            expr_type = expr_type[0]
         if expr_type.upper() != var_type.upper():
             raise SemanticError(
                 f"Tipos incompatíveis na atribuição: variável '{var_node}' é {var_type}, "
@@ -232,7 +234,10 @@ class SemanticAnalyzer:
         _, base_node, field_name = node
 
         # obtém o tipo do base (pode vir de visit_var ou visit_array)
-        base_type = self.visit(base_node)    # ex.: "tregistopessoa"
+        if base_node[0] == 'var':
+            base_type = self.current_scope.resolve(base_node[1].lower()).type
+        else:    
+            base_type = self.visit(base_node)
         # resolve o símbolo desse tipo
         type_sym = self.current_scope.resolve(base_type)
 
@@ -246,6 +251,13 @@ class SemanticAnalyzer:
 
     def visit_const(self, node):
         _, type, _ = node
+        return type
+    
+    def visit_const_expr(self, node):
+        _, type, b = node
+        if type == 'id':
+            const_node = 'var', b.lower()
+            return self.visit(const_node).lower()
         return type
 
     def visit_binop(self, node):
@@ -294,11 +306,22 @@ class SemanticAnalyzer:
     
         # Operador IN (elemento ∈ conjunto)
         if op == 'in':
-            if not isinstance(tipo_dir, tuple) or tipo_dir[0] != 'set':
-                raise SemanticError(f"Operador 'in' requer um conjunto do lado direito, mas recebeu {tipo_dir}.")
-            elem_type = tipo_dir[1].lower()
-            if tipo_esq != elem_type:
-                raise SemanticError(f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}.")
+            if tipo_dir == 'set':
+                elem_type = tipo_dir.lower()
+                if tipo_esq != 'enum':
+                    raise SemanticError(f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}.")
+            else:
+                if not (isinstance(tipo_dir, tuple)):
+                    raise SemanticError(
+                        f"Operador 'in' requer um conjunto do lado direito, mas recebeu {tipo_dir}."
+                    )
+                # 2) extrai o tipo dos elementos do conjunto
+                elem_type = tipo_dir[1]
+                # 3) compara com o tipo do operando da esquerda
+                if tipo_esq != elem_type:
+                    raise SemanticError(
+                        f"Elemento do tipo {tipo_esq} não compatível com o conjunto de {elem_type}."
+                    )
             return 'boolean'
     
         # Operadores lógicos
@@ -550,7 +573,10 @@ class SemanticAnalyzer:
             else:
                 if kind == 'enum':
                     # os enums continuam a ser um tipo próprio
-                    self.current_scope.define(name.lower(), name.lower())
+                    self.current_scope.define(name.lower(), 'enum')
+                    for e in tipo[1]:
+                        self.current_scope.define(e.lower(), 'enum')
+                        self.initialized.add(e.lower())
                 elif kind == 'subrange':
                     # subrange → desce ao tipo base (integer)
                     base_type = self._normalize_type(tipo)   # isto já retorna 'integer'
