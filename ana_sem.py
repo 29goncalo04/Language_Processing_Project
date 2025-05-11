@@ -234,15 +234,15 @@ class SemanticAnalyzer:
         _, base, indices = node
         key = base[1].lower()
         base_type = self.current_scope.resolve(key).type
-    
+
         if not (isinstance(base_type, tuple) and base_type[0] == 'array'):
             raise SemanticError(f"Tentativa de indexar uma variável que não é um array: {base_type}")
-    
+
         for idx_expr in indices:
             idx_type = self.visit(idx_expr)
             if idx_type != 'integer':
                 raise SemanticError(f"Índice de array deve ser INTEGER, mas recebeu {idx_type}.")
-    
+
         return base_type[1]  # tipo do elemento do array
 
     def visit_field(self, node):
