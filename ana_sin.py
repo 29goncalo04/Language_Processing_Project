@@ -174,7 +174,7 @@ def p_enum_type(p):
     p[0] = ('enum', p[2])
 
 def p_subrange_type(p):
-    'subrange_type : constant RANGE constant'
+    'subrange_type : const_expr RANGE const_expr'
     p[0] = ('subrange', p[1], p[3])
 
 def p_record_type(p):
@@ -404,8 +404,8 @@ def p_case_item(p):
     p[0] = (p[1], p[3])
 
 def p_constant_list(p):
-    '''constant_list : constant
-                     | constant_list COMMA constant'''
+    '''constant_list : const_expr
+                     | constant_list COMMA const_expr'''
     if len(p)==2: 
         p[0]=[p[1]]
     else: 
@@ -528,7 +528,7 @@ def p_error(p):
 
 
 # Construir parser
-parser = yacc.yacc(debug=True, write_tables=True)
+parser = yacc.yacc()
 
 # Função de interface
 def parse(data):
