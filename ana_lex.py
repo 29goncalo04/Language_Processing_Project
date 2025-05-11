@@ -1,12 +1,13 @@
-import re, sys
+import sys
 import ply.lex as lex
 
 # Lista completa de tokens
 tokens = (
+    # Tipos básicos e literais
     'TIPO',
     'BOOLEAN',
 
-    # Palavras‑reservadas
+    # Palavras-reservadas da linguagem Pascal
     'AND',
     'ARRAY',
     'BEGIN',
@@ -49,7 +50,7 @@ tokens = (
     'CHAR',
     'TEXTO',
 
-    # Operadores
+    # Operadores aritméticos e relacionais
     'PLUS',
     'MINUS',
     'TIMES',
@@ -62,7 +63,7 @@ tokens = (
     'GE',
     'GT',
 
-    # Pontuação
+    # Símbolos de pontuação e delimitadores
     'LPAREN',
     'RPAREN',
     'LBRACKET',
@@ -75,7 +76,7 @@ tokens = (
 )
 
 # Regras para cada palavra-reservada (funções individuais)
-# Pascal Standard é case-insensitive, usamos re.IGNORECASE ao construir o lexer
+# Pascal Standard é case-insensitive - funções construídas de modo a refletir isso
 
 def t_TIPO(t):
     r'\b([iI][nN][tT][eE][gG][eE][rR]|\b[rR][eE][aA][lL]|\b[bB][oO][oO][lL][eE][aA][nN]|\b[cC][hH][aA][rR])\b'
@@ -258,7 +259,7 @@ def t_TEXTO(t):
     r"\'([^']|'')+\'"
     valor = t.value[1:-1].replace("''", "'")
     if len(valor) == 1:
-        # Captado por engano, ignora este token
+        # Captado por engano, ignorar este token
         return
     t.value = valor
     return t
