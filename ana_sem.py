@@ -75,11 +75,10 @@ class SemanticAnalyzer:
         chr_sym.return_type = 'char'
         self.global_scope.define('chr', chr_sym)
 
-        for tname in ('integer','real'):
-            sym = Symbol(tname, 'function')
-            sym.params = [('x', tname)]
-            sym.return_type = tname
-            self.global_scope.define(tname, sym)
+        real_sym = Symbol('real', 'function')
+        real_sym.params = [('x', 'integer')]  # Cast de integer para real
+        real_sym.return_type = 'real'
+        self.global_scope.define('real', real_sym)
 
     def analyze(self, node):
         self.visit(node)
@@ -370,8 +369,8 @@ class SemanticAnalyzer:
             # podes aqui validar intervalos (e.g. 0..6) se quiseres
             return nl   # devolve o nome do tipo (casefold)
 
-        # —————— CAST PARA REAL/INTEGER ——————
-        if nl in ('real', 'integer'):
+        # —————— CAST PARA REAL ——————
+        if nl == 'real':
             # espera exactamente 1 argumento
             if len(argumentos) != 1:
                 raise SemanticError(f"Cast para '{nome}' espera 1 argumento, mas recebeu {len(argumentos)}.")
@@ -380,8 +379,6 @@ class SemanticAnalyzer:
             # só permites integer→real ou real→integer se quiseres
             if nl == 'real' and at not in ('integer','real'):
                 raise SemanticError(f"Cast real({at}) inválido; só integer ou real.")
-            if nl == 'integer' and at not in ('integer','real'):
-                raise SemanticError(f"Cast integer({at}) inválido; só integer ou real.")
             return nl   # devolve o tipo do cast
 
         # caso especial length(array)
@@ -514,6 +511,8 @@ class SemanticAnalyzer:
                     else:
                         key = a[1].lower()
                         sym = self.current_scope.resolve(key)
+                        if sym.type not in ('boolean', 'char', 'integer', 'real'):
+                            raise SemanticError(f"A função '{nl}' não pode receber um argumento do tipo '{sym.type}'.")
                 return None
 
 
