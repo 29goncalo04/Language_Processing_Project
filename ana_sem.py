@@ -175,12 +175,18 @@ class SemanticAnalyzer:
                 return
 
         # atribuição normal a variável
-        # obter tipo sem tratar como “leitura” (para não disparar check de uninitialized)
         if var_node[0] == 'var':
-            if self.current_scope.symbols[nome_var].kind == 'const':
-                raise SemanticError(f"Não pode declarar uma constante como se fosse uma variável")
-            var_name = var_node[1].lower()
-            var_type = self.current_scope.resolve(var_name).type
+            if nome_var in self.current_scope.symbols:
+                if self.current_scope.symbols[nome_var].kind == 'const':
+                    raise SemanticError(f"Não pode atribuir a constante '{nome_var}'")
+                var_type = self.current_scope.symbols[nome_var].type
+            else:
+                # Se não encontrar no escopo local, tenta no escopo global
+                if nome_var in self.global_scope.symbols:
+                    var_type = self.global_scope.symbols[nome_var].type
+                else:
+                    raise SemanticError(f"Variável '{nome_var}' não declarada.")
+
         else:
             var_type = self.visit(var_node)
         expr_type = self.visit(expr)
@@ -190,7 +196,7 @@ class SemanticAnalyzer:
                 f"mas expressão é {expr_type}."
             )
         if var_node[0] == 'var':
-            self.initialized.add(var_name.lower())
+            self.initialized.add(var_node[1].lower())
 
     def visit_numero(self, node):
         _, valor = node
