@@ -150,6 +150,28 @@ class SemanticAnalyzer:
                             elif kind != 'integer':
                                 raise SemanticError(
                                     f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                    elif tipo[0].lower() == 'packed' and tipo[1][0].lower() == 'array_type':
+                        lower_node, upper_node = tipo[1][1] 
+                        # cada limite tem de ser const_expr
+                        if lower_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                        if upper_node[0].lower() != 'const_expr':
+                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                        # se for id, garante que é constante
+                        for bound in (lower_node, upper_node):
+                            kind = bound[1].lower()
+                            if kind == 'id':
+                                name2 = bound[2].lower()
+                                sym = self.current_scope.resolve(name2)
+                                if sym.kind != 'const':
+                                    raise SemanticError(
+                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                if sym.type != 'integer':
+                                     raise SemanticError(
+                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                            elif kind != 'integer':
+                                raise SemanticError(
+                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
                     type_str = self._normalize_type(tipo)
                     self.current_scope.define(name.lower(), type_str)
 
