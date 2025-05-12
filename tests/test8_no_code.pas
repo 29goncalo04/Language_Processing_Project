@@ -1,3 +1,4 @@
+{exemplo inventado sem geração de código e com análise semântica limitada}
 program TesteCompleto;
 
 { secção CONST }
