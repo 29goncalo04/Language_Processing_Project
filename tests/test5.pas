@@ -1,20 +1,14 @@
-program NumeroPrimo;
+program SomaArray;
 var
-    num, i: integer;
-    primo: boolean;
+    numeros: array[1..5] of integer;
+    i, soma: integer;
 begin
-    writeln('Introduza um número inteiro positivo:');
-    readln(num);
-    primo := true;
-    i := 2;
-    while (i <= (num div 2)) and primo do
-        begin
-            if (num mod i) = 0 then
-                primo := false;
-            i := i + 1;
-        end;
-    if primo then
-        writeln(num, ' é um número primo')
-    else
-        writeln(num, ' não é um número primo')
+    soma := 0;
+    writeln('Introduza 5 números inteiros:');
+    for i := 1 to 5 do
+    begin
+        readln(numeros[i]);
+        soma := soma + numeros[i];
+    end;
+    writeln('A soma dos números é: ', soma);
 end.

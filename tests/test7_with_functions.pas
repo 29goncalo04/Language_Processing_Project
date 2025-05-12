@@ -1,11 +1,27 @@
-{exemplo 6 do enunciado mas sem length e string (porque não existe em Pascal Standard)}
+{exemplo 7 do enunciado mas sem length e string (porque não existe em Pascal Standard) e com funções}
 
 program BinarioParaInteiro;
 type
     mystring = array[1..100] of CHAR;
+
+function BinToInt(bin: mystring; len: integer): integer;
+var
+    i, valor, potencia: integer;
+begin
+    valor := 0;
+    potencia := 1;
+    for i := len downto 1 do
+    begin
+        if bin[i] = '1' then
+            valor := valor + potencia;
+        potencia := potencia * 2
+    end;
+    BinToInt := valor
+end;
+
 var
     bin: mystring;
-    i, valor, potencia, len: integer;
+    len, resultado: integer;
     ch: char;
     valido: boolean;
 begin
@@ -35,16 +51,9 @@ begin
     { Se tudo foi válido, converte binário para inteiro }
     if valido then
     begin
-        valor := 0;
-        potencia := 1;  
-        for i := len downto 1 do
-        begin
-            if bin[i] = '1' then
-                valor := valor + potencia;
-            potencia := potencia * 2
-        end;  
-
-        writeln('O valor inteiro correspondente é: ', valor)
+        { Chama a função que converte o binário para inteiro }
+        resultado := BinToInt(bin, len);  
+        writeln('O valor inteiro correspondente é: ', resultado)
     end
     else
         writeln('Erro: string inválida (tamanho >100 ou carácteres não binários).');

@@ -1,10 +1,4 @@
-PROGRAM Test;
-VAR x, y: INTEGER;
-BEGIN
-    x := 10;
-    y := x DIV 2 + 3;
-    IF real(y) > 5.123 THEN
-        WRITE('Maior que cinco');
-    (* fim *)
-    {fim}
-END.
+program HelloWorld;
+begin
+    writeln('Ola, Mundo!');
+end.
