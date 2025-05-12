@@ -1,3 +1,4 @@
+{exemplo 4 do enunciado}
 program NumeroPrimo;
 var
     num, i: integer;

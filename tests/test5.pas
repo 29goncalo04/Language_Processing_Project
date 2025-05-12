@@ -1,3 +1,4 @@
+{exemplo 5 do enunciado}
 program SomaArray;
 var
     numeros: array[1..5] of integer;

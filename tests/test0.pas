@@ -1,3 +1,4 @@
+{exemplo 0 inventado}
 PROGRAM Test;
 VAR x, y: INTEGER;
 BEGIN

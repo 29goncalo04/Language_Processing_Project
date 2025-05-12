@@ -1,3 +1,4 @@
+{exemplo 3 do enunciado}
 program Fatorial;
 var
     n, i, fat: integer;
