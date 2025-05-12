@@ -1,57 +1,36 @@
-{exemplo 6 do enunciado mas sem length e string (porque não existe em Pascal Standard)}
-
-program BinarioParaInteiro;
+{exemplo 6 inventado (não é do enunciado porque não dava para separar a string lida pelos vários caracteres)}
+program SomaQuadradosParesAteN;
 
 type
-  mystring = array[1..100] of CHAR;
-  
+  PosInt = integer;
+
+const
+  SOMA_INICIAL = 0;
+
 var
-  bin: mystring;
-  i, valor, potencia, len: integer;
-  input: mystring;
-  ch: char;
-  valido: boolean;
-  
+  n: PosInt;
+  i: PosInt;
+  soma: PosInt;
+
 begin
-  writeln('Introduza uma string binária terminada por um ponto (ex: 10101.):');
-  readln(input); 
-  len := 0;
-  valido := true;
-  i := 1;
-  ch:='a';
+  writeln('Insere um número inteiro positivo:');
+  read(n);
 
-  { percorre a string até ao '.' ou erro ou mais de 100 }
-  while (i <= 100) and (ch<>'.') do
+  while n <= 0 do
   begin
-    ch := input[i];
-
-    if (ch = '0') or (ch = '1') then
-    begin
-      len := len + 1;
-      bin[len] := ch;
-    end;
-
-    i := i + 1;
+    writeln('O número tem de ser positivo. Tenta novamente:');
+    read(n);
   end;
-  
-  { se não terminou com '.', também é erro }
-  if input[i-1] <> '.' then
-    valido := false;
 
-  if valido then
+  soma := SOMA_INICIAL;
+
+  for i := 1 to n do
   begin
-    valor := 0;
-    potencia := 1;
-
-    for i := len downto 1 do
+    if (i mod 2 = 0) then
     begin
-      if bin[i] = '1' then
-        valor := valor + potencia;
-      potencia := potencia * 2;
+      soma := soma + i * i;
     end;
+  end;
 
-    writeln('O valor inteiro correspondente é: ', valor);
-  end
-  else
-    writeln('Erro: string inválida (tamanho >100 ou carácteres não binários).');
+  writeln('A soma dos quadrados dos números pares até ', n, ' é: ', soma);
 end.

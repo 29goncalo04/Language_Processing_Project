@@ -1,0 +1,5 @@
+START
+PUSHS "Olá, Mundo!"
+WRITES
+WRITELN
+STOP

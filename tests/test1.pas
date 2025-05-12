@@ -1,5 +1,5 @@
 {exemplo 1 do enunciado}
 program HelloWorld;
 begin
-    writeln('Ola, Mundo!');
+    writeln('Olá, Mundo!');
 end.

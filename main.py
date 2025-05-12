@@ -2,8 +2,9 @@ import sys
 import os
 from ana_sin import parse
 from ana_sem import*
+from gerador_codigo import CodeGenerator
 
-from pprint import PrettyPrinter #remover depois 
+from pprint import PrettyPrinter
 
 def main():
     if len(sys.argv) != 2:
@@ -29,12 +30,17 @@ def main():
 
     try:
         result = parse(codigo)
-        pp = PrettyPrinter(width=80, indent=4)
-        pp.pprint(result)
+        # pp = PrettyPrinter(width=80, indent=4)
+        # pp.pprint(result)
         if result!=None:
             analyzer = SemanticAnalyzer()
             analyzer.analyze(result)
-            print("Análise semântica concluída com sucesso.")
+            gen = CodeGenerator()
+            gen.build_symtab(result)
+            gen.gen(result)
+            out = caminho_ficheiro.rsplit('.', 1)[0] + '.vm'
+            gen.write(out)
+            print(f"Código gerado em: {out}")
     except SemanticError as e:
         print(e)
 
