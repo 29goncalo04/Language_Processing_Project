@@ -664,7 +664,7 @@ class SemanticAnalyzer:
         base_type = self.current_scope.resolve(key).type
         # Verifica se a base é um array
         if not (isinstance(base_type, tuple) and base_type[0] == 'array'):
-            raise SemanticError(f"Tentativa de indexar uma variável que não é um array: {base_type}")
+            raise SemanticError(f"Tentativa de indexar uma variável que não é um array, mas sim do tipo '{base_type}'")
         idx_type = self.visit(indice)
         # Verifica o tipo do índice (deve ser 'integer')
         if idx_type != 'integer':
