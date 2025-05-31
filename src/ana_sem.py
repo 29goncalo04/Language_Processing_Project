@@ -25,33 +25,33 @@ class Symbol:
 
 class Scope:
     """
-    Representa um escopo de declaração, como um bloco de código ou função.
+    Representa um scope de declaração, como um bloco de código ou função.
     Atributos:
         symbols (dict): Mapeamento entre nomes de identificadores e os seus símbolos.
-        parent (Scope): Escopo pai, permitindo encadeamento para suportar escopos aninhados.
+        parent (Scope): Scope pai, permitindo encadeamento para suportar scopes aninhados.
     Métodos:
-        define(name, type_, kind): Adiciona um novo símbolo ao escopo atual.
-        resolve(name): Procura um símbolo pelo nome, recursivamente nos escopos pai.
+        define(name, type_, kind): Adiciona um novo símbolo ao scope atual.
+        resolve(name): Procura um símbolo pelo nome, recursivamente nos scopes pai.
     Esta classe é usada para gerir tabelas de símbolos em programas com blocos aninhados,
     garantindo que declarações e utilizações de identificadores respeitam as regras
-    de visibilidade e escopo do Pascal ISO 7185.
+    de visibilidade e scope do Pascal ISO 7185.
     """
     def __init__(self, parent=None):
         self.symbols = {}
         self.parent = parent
 
     """
-    Declara um novo símbolo no escopo atual. Lança erro se já existir.
+    Declara um novo símbolo no scope atual. Lança erro se já existir.
     Args:
         name (str): Nome do identificador.
         type_ (str | Symbol): Tipo associado ao símbolo.
         kind (str): 'var' ou 'const'.
     Raises:
-        SemanticError: Se o nome já estiver declarado neste escopo.
+        SemanticError: Se o nome já estiver declarado neste scope.
     """
     def define(self, name, type_, kind='var'):
         if name in self.symbols:
-            raise SemanticError(f"Variável '{name}' já foi declarada neste escopo.")
+            raise SemanticError(f"Variável '{name}' já foi declarada neste scope.")
         if isinstance(type_, Symbol):
             sym = type_
             sym.name = name
@@ -61,13 +61,13 @@ class Scope:
         self.symbols[name] = sym
 
     """
-    Procura um símbolo com o nome dado, neste escopo ou nos escopos pai.
+    Procura um símbolo com o nome dado, neste scope ou nos scopes pai.
     Args:
         name (str): Nome do identificador a procurar.
     Returns:
         Symbol: O símbolo correspondente.
     Raises:
-        SemanticError: Se o nome não estiver declarado em nenhum escopo acessível.
+        SemanticError: Se o nome não estiver declarado em nenhum scope acessível.
     """
     def resolve(self, name):
         if name in self.symbols:
@@ -82,7 +82,7 @@ class SemanticAnalyzer:
     """
     Analisador semântico para um programa Pascal (ISO 7185).
     Responsável por:
-    - Gerir escopos e símbolos (variáveis, constantes, tipos, etc.).
+    - Gerir scopes e símbolos (variáveis, constantes, tipos, etc.).
     - Verificar inicialização e uso correto de variáveis.
     - Validar chamadas e tipos de funções e procedimentos.
     - Aplicar regras semânticas da linguagem Pascal.
@@ -164,7 +164,7 @@ class SemanticAnalyzer:
         # Extrai a lista de constantes da árvore sintática
         _, const_list = node
         for nome, expr in const_list:
-            # Verifica se a constante já foi declarada no escopo atual
+            # Verifica se a constante já foi declarada no scope atual
             if nome.lower() in self.current_scope.symbols:
                 raise SemanticError(f"Constante '{nome}' já declarada.")
             # Avalia a expressão associada à constante e obtém o tipo resultante
@@ -190,7 +190,7 @@ class SemanticAnalyzer:
                     for id_name in nomes:
                         key = id_name.lower()
                         if key in campos:
-                            raise SemanticError(f"Campo '{id_name}' já definido em record '{name}'.")
+                            raise SemanticError(f"Campo '{id_name}' já definido no record '{name}'.")
                         campos[key] = t_str
                 # Cria símbolo para o tipo record, com os campos associados
                 rec_sym = Symbol(name.lower(), name.lower())
@@ -214,9 +214,9 @@ class SemanticAnalyzer:
                         lower_node, upper_node = tipo[1] 
                         # Garante que os limites são expressões constantes
                         if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                            raise SemanticError(f"Limite inferior do array deve ser constante, mas é {lower_node}")
                         if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                            raise SemanticError(f"Limite superior do array deve ser constante, mas é {upper_node}")
                         # Verifica os tipos dos limites e se são constantes
                         for bound in (lower_node, upper_node):
                             kind = bound[1].lower()
@@ -225,21 +225,21 @@ class SemanticAnalyzer:
                                 sym = self.current_scope.resolve(name2)
                                 if sym.kind != 'const':
                                     raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                        f"Limite do array deve ser constante, mas '{bound[2]}' não é uma constante.")
                                 if sym.type != 'integer':
                                      raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                                         f"Limite do array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
                             elif kind != 'integer':
                                 raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                                    f"Limite do array deve ser do tipo INTEGER, mas é do tipo '{kind}'.")
                     # Verifica se é um packed array (estrutura compactada)
                     elif tipo[0].lower() == 'packed' and tipo[1][0].lower() == 'array_type':
                         lower_node, upper_node = tipo[1][1] 
                         # cada limite tem de ser const_expr
                         if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                            raise SemanticError(f"Limite inferior do array deve ser constante, mas é {lower_node}")
                         if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                            raise SemanticError(f"Limite superior do array deve ser constante, mas é {upper_node}")
                         # se for id, garante que é constante
                         for bound in (lower_node, upper_node):
                             kind = bound[1].lower()
@@ -248,20 +248,20 @@ class SemanticAnalyzer:
                                 sym = self.current_scope.resolve(name2)
                                 if sym.kind != 'const':
                                     raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                        f"Limite do array deve ser constante, mas '{bound[2]}' não é uma constante.")
                                 if sym.type != 'integer':
                                      raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                                         f"Limite do array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
                             elif kind != 'integer':
                                 raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                                    f"Limite do array deve ser do tipo INTEGER, mas é do tipo '{kind}'.")
                     # Packed que envolve outro tipo (por exemplo, packed record)
                     elif tipo[0].lower() == 'packed':
                         self.visit(tipo[1])
                     # Outros tipos compostos
                     elif tipo[0].lower() not in ('simple_type', 'array_type', 'id_type'):
                         self.visit(tipo)
-                    # Após verificação e processamento, regista o tipo no escopo
+                    # Após verificação e processamento, regista o tipo no scope
                     type_str = self._normalize_type(tipo)
                     self.current_scope.define(name.lower(), type_str)
 
@@ -272,9 +272,9 @@ class SemanticAnalyzer:
 
         for lbl in label_list:
             key = str(lbl).lower()
-            # Verifica se já existe uma label com o mesmo nome no escopo atual
+            # Verifica se já existe uma label com o mesmo nome no scope atual
             if key in self.current_scope.symbols:
-                raise SemanticError(f"Label '{lbl}' já declarado neste escopo.")
+                raise SemanticError(f"Label '{lbl}' já declarada neste scope.")
             # Regista a label como símbolo do tipo 'label' na tabela de símbolos
             self.current_scope.symbols[key] = Symbol(key, 'label')
 
@@ -295,9 +295,9 @@ class SemanticAnalyzer:
             lower_node, upper_node = tipo[1] 
             # Garante que os limites inferior e superior são expressões constantes
             if lower_node[0].lower() != 'const_expr':
-                raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                raise SemanticError(f"Limite inferior do array deve ser constante, mas é {lower_node}")
             if upper_node[0].lower() != 'const_expr':
-                raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                raise SemanticError(f"Limite superior do array deve ser constante, mas é {upper_node}")
             # Valida o tipo dos limites (devem ser inteiros e constantes)
             for bound in (lower_node, upper_node):
                 kind = bound[1].lower()
@@ -306,13 +306,13 @@ class SemanticAnalyzer:
                     sym = self.current_scope.resolve(name)
                     if sym.kind != 'const':
                         raise SemanticError(
-                            f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                            f"Limite do array deve ser constante, mas '{bound[2]}' não é uma constante.")
                     if sym.type != 'integer':
                                      raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name}' é do tipo {sym.type}.")
+                                         f"Limito de array deve ser do tipo INTEGER, mas '{name}' é do tipo {sym.type}.")
                 elif kind != 'integer':
                     raise SemanticError(
-                        f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                        f"Limite do array deve ser do tipo INTEGER, mas é do tipo '{kind}'.")
         # Normaliza o tipo da variável (transforma o nó da árvore num tipo como 'integer', 'real', etc.)
         type_str = self._normalize_type(tipo)
         for nome in nomes:
@@ -335,11 +335,11 @@ class SemanticAnalyzer:
         _, nome, params, return_type, block = node
         nl = nome.lower()
 
-        # 1) Verifica se a função já foi declarada no escopo actual (pai)
+        # 1) Verifica se a função já foi declarada no scope actual (pai)
         if nl in self.current_scope.symbols:
             raise SemanticError(f"A função '{nome}' já está definida.")
 
-        # 2) Cria o símbolo da função e regista-o no escopo actual
+        # 2) Cria o símbolo da função e regista-o no scope actual
         func_sym = Symbol(nl, 'function')
         # Processa os parâmetros: extrai nomes e tipos normalizados
         lista = []
@@ -359,14 +359,14 @@ class SemanticAnalyzer:
         if return_type[0] not in ('simple_type', 'array_type', 'id_type'):
             self.visit(return_type)
 
-        # Regista a função na tabela de símbolos do escopo actual
+        # Regista a função na tabela de símbolos do scope actual
         self.current_scope.define(nl, func_sym)
 
         # 3) Prepara análise do corpo da função
         prev_fn = getattr(self, 'current_function', None)
         self.current_function = nl
 
-        # Cria novo escopo filho para os parâmetros e o corpo
+        # Cria novo scope filho para os parâmetros e o corpo
         self.current_scope = Scope(self.current_scope)
         for param_nome, param_tipo in func_sym.params:
             self.current_scope.define(param_nome.lower(), param_tipo)
@@ -375,7 +375,7 @@ class SemanticAnalyzer:
         # Analisa o bloco da função
         self.visit(block)
 
-        # Fecha o escopo e repõe a função anterior (caso haja)
+        # Fecha o scope e repõe a função anterior (caso haja)
         self.current_scope = self.current_scope.parent
         self.current_function = prev_fn
         # Devolve o tipo de retorno da função (útil para verificação posterior)
@@ -390,7 +390,7 @@ class SemanticAnalyzer:
 
         # 1) Verifica se já existe uma procedure com esse nome
         if nl in self.current_scope.symbols:
-            raise SemanticError(f"Procedimento '{nome}' já está definido neste escopo.")
+            raise SemanticError(f"Procedimento '{nome}' já está definido neste scope.")
 
         # 2) Cria o símbolo da procedure
         proc_sym = Symbol(nl, 'procedure')
@@ -405,9 +405,9 @@ class SemanticAnalyzer:
                         lower_node, upper_node = tipo_node[1] 
                         # cada limite tem de ser const_expr
                         if lower_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                            raise SemanticError(f"Limite inferior do array deve ser constante, mas é {lower_node}")
                         if upper_node[0].lower() != 'const_expr':
-                            raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                            raise SemanticError(f"Limite superior do array deve ser constante, mas é {upper_node}")
                         # se for id, garante que é constante
                         for bound in (lower_node, upper_node):
                             kind = bound[1].lower()
@@ -416,13 +416,13 @@ class SemanticAnalyzer:
                                 sym = self.current_scope.resolve(name2)
                                 if sym.kind != 'const':
                                     raise SemanticError(
-                                        f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                        f"Limite do array deve ser constante, mas '{bound[2]}' não é uma constante.")
                                 if sym.type != 'integer':
                                      raise SemanticError(
-                                         f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                                         f"Limite do array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
                             elif kind != 'integer':
                                 raise SemanticError(
-                                    f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                                    f"Limite do array deve ser do tipo INTEGER, mas é do tipo '{kind}'.")
                 tipo_str = self._normalize_type(tipo_node)
                 for id_name in nomes:
                     if p[2][0] not in ('simple_type', 'array_type', 'id_type'):
@@ -437,7 +437,7 @@ class SemanticAnalyzer:
         prev_proc = getattr(self, 'current_procedure', None)
         self.current_procedure = nl
 
-        # 4) Abre novo escopo e define os parâmetros como variáveis iniciais
+        # 4) Abre novo scope e define os parâmetros como variáveis iniciais
         self.current_scope = Scope(self.current_scope)
         for param_nome, param_tipo in proc_sym.params:
             self.current_scope.define(param_nome, param_tipo)
@@ -446,7 +446,7 @@ class SemanticAnalyzer:
         # 5) Analisa o bloco do procedimento
         self.visit(block)
 
-        # 6) Fecha o escopo e restaura o nome da procedure anterior (se aplicável)
+        # 6) Fecha o scope e restaura o nome da procedure anterior (se aplicável)
         self.current_scope = self.current_scope.parent
         self.current_procedure = prev_proc
     
@@ -489,7 +489,7 @@ class SemanticAnalyzer:
                     const_tipo = self.visit(const_node)
                     if const_tipo != discrim_tipo:
                         raise SemanticError(
-                            f"Etiqueta de variant tem tipo {const_tipo}, mas discriminador é {discrim_tipo}."
+                            f"Label de variant tem tipo {const_tipo}, mas discriminador é {discrim_tipo}."
                         )
                 # Processa os campos dentro da variante
                 inner_map = {}
@@ -529,9 +529,9 @@ class SemanticAnalyzer:
                 upper_node = tipo_node[2]
                 # Verifica se os limites são expressões constantes
                 if lower_node[0].lower() != 'const_expr':
-                    raise SemanticError(f"Limite inferior de array deve ser constante, mas recebeu {lower_node}")
+                    raise SemanticError(f"Limite inferior do array deve ser constante, mas é {lower_node}")
                 if upper_node[0].lower() != 'const_expr':
-                    raise SemanticError(f"Limite superior de array deve ser constante, mas recebeu {upper_node}")
+                    raise SemanticError(f"Limite superior do array deve ser constante, mas é {upper_node}")
                 # Se os limites forem identificadores, garante que sejam constantes
                 for bound in (lower_node, upper_node):
                     kind = bound[1].lower()
@@ -540,13 +540,13 @@ class SemanticAnalyzer:
                         sym = self.current_scope.resolve(name2)
                         if sym.kind != 'const':
                             raise SemanticError(
-                                f"Limite de array deve ser constante, mas '{bound[2]}' não é uma constante.")
+                                f"Limite do array deve ser constante, mas '{bound[2]}' não é uma constante.")
                         if sym.type != 'integer':
                              raise SemanticError(
-                                 f"Limite de array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
+                                 f"Limite do array deve ser do tipo INTEGER, mas '{name2}' é do tipo {sym.type}.")
                     elif kind != 'integer':
                         raise SemanticError(
-                            f"Limite de array deve ser do tipo INTEGER, mas recebeu tipo '{kind}'.")
+                            f"Limite do array deve ser do tipo INTEGER, mas é do tipo '{kind}'.")
                 elem_type = 'integer'
             else:
                 raise SemanticError(
@@ -601,7 +601,7 @@ class SemanticAnalyzer:
             if nome_var == getattr(self, 'current_function', None):
                 # Se for o retorno, verifica tipo de retorno
                 expr_type = self.visit(expr).lower()
-                # Busca símbolo da função no escopo global (onde definimos return_type)
+                # Busca símbolo da função no scope global (onde definimos return_type)
                 func_sym = self.global_scope.resolve(nome_var.lower())
                 ret_type = func_sym.return_type.lower()
                 if expr_type != ret_type:
@@ -619,7 +619,7 @@ class SemanticAnalyzer:
                     raise SemanticError(f"Não pode atribuir a constante '{nome_var}'")
                 var_type = self.current_scope.symbols[nome_var].type
             else:
-                # Se não encontrar no escopo local, tenta no escopo global
+                # Se não encontrar no scope local, tenta no scope global
                 if nome_var in self.global_scope.symbols:
                     var_type = self.global_scope.symbols[nome_var].type
                 else:
@@ -664,11 +664,11 @@ class SemanticAnalyzer:
         base_type = self.current_scope.resolve(key).type
         # Verifica se a base é um array
         if not (isinstance(base_type, tuple) and base_type[0] == 'array'):
-            raise SemanticError(f"Tentativa de indexar uma variável que não é um array, mas sim do tipo '{base_type}'")
+            raise SemanticError(f"Tentativa de indexar uma variável que não é um array, mas do tipo '{base_type}'")
         idx_type = self.visit(indice)
         # Verifica o tipo do índice (deve ser 'integer')
         if idx_type != 'integer':
-            raise SemanticError(f"Índice de array deve ser INTEGER, mas recebeu {idx_type}.")
+            raise SemanticError(f"Índice do array deve ser INTEGER, mas é do tipo {idx_type}.")
         return base_type[1]  # tipo do elemento do array
     
 
@@ -698,7 +698,7 @@ class SemanticAnalyzer:
         _, nome, argumentos = node
         nl = nome.lower()
 
-        # Tenta resolver o símbolo da função no escopo atual
+        # Tenta resolver o símbolo da função no scope atual
         sym = None
         try:
             sym = self.current_scope.resolve(nl)
@@ -801,7 +801,7 @@ class SemanticAnalyzer:
         # Verifica o tipo da condição do IF (deve ser boolean)
         cond_type = self.visit(cond)
         if cond_type != 'boolean':
-            raise SemanticError(f"A condição do IF deve ser boolean, mas foi {cond_type}.")
+            raise SemanticError(f"A condição do IF deve ser boolean, mas é {cond_type}.")
         # Processa a parte 'then' da instrução
         self.visit(then_stmt)
         if else_stmt is not None:
@@ -864,7 +864,7 @@ class SemanticAnalyzer:
         cond_type = self.visit(cond)
         if cond_type.lower() != 'boolean':
             raise SemanticError(
-                f"Condição de REPEAT…UNTIL deve ser boolean, mas recebeu {cond_type}."
+                f"Condição de REPEAT…UNTIL deve ser boolean, mas é {cond_type}."
             )
         
 
@@ -885,12 +885,12 @@ class SemanticAnalyzer:
                 label_type = self.visit(const_node).lower()
                 if label_type != expr_type:
                     raise SemanticError(
-                        f"Etiqueta de CASE tem tipo {label_type}, mas a expressão é {expr_type}."
+                        f"Label de CASE tem tipo {label_type}, mas a expressão é {expr_type}."
                     )
                 # Identifica a constante para detetar duplicados (usa o nó como chave)
                 key = repr(const_node)
                 if key in seen_labels:
-                    raise SemanticError(f"Etiqueta de CASE repetida: {const_node}.")
+                    raise SemanticError(f"Label de CASE repetida: {const_node}.")
                 seen_labels.add(key)
 
             # 3) Analisa semanticamente todas as instruções dentro do ramo do 'case'
@@ -902,7 +902,7 @@ class SemanticAnalyzer:
     def visit_with(self, node):
         _, var_list, stmt = node
 
-        # 1) Prepara um novo escopo filho onde vamos introduzir os campos
+        # 1) Prepara um novo scope filho onde vamos introduzir os campos
         old_scope = self.current_scope
         with_scope = Scope(parent=old_scope)
 
@@ -913,7 +913,7 @@ class SemanticAnalyzer:
                 raise SemanticError(f"WITH só suporta variáveis simples, mas recebeu {var_node[0]!r}.")
             var_name = var_node[1].lower()
 
-            # resolve a variável no escopo anterior
+            # resolve a variável no scope anterior
             sym = old_scope.resolve(var_name)
             # Obtém o nome do tipo da variável, que deve ser um 'record' definido anteriormente
             type_name = sym.type.lower()
@@ -922,23 +922,23 @@ class SemanticAnalyzer:
             # Valida que o tipo da variável é efetivamente um 'record'
             if not hasattr(type_sym, 'fields'):
                 raise SemanticError(
-                    f"Variável '{var_node[1]}' em WITH não é um record, mas tipo '{sym.type}'."
+                    f"Variável '{var_node[1]}' em WITH não é um record, mas é do tipo '{sym.type}'."
                 )
 
-            # Define cada campo do record no escopo atual do 'WITH'
+            # Define cada campo do record no scope atual do 'WITH'
             for field_name, field_type in type_sym.fields.items():
                 # Os nomes dos campos já estão em minúsculas na definição de 'fields'
                 with_scope.define(field_name,
                                   field_type,
                                   kind='var')
 
-        # 3) Passa a usar o escopo alargado dentro do bloco 'WITH'
+        # 3) Passa a usar o scope alargado dentro do bloco 'WITH'
         self.current_scope = with_scope
 
         # 4) Analisa semanticamente o statement interno dentro do 'WITH'
         self.visit(stmt)
 
-        # 5) Restaura o escopo anterior após o fim do bloco 'WITH'
+        # 5) Restaura o scope anterior após o fim do bloco 'WITH'
         self.current_scope = old_scope
 
 
@@ -946,9 +946,9 @@ class SemanticAnalyzer:
     def visit_goto(self, node):
         _, label = node
         key = str(label).lower()
-        # Resolve o símbolo associado ao rótulo (label) no escopo atual
+        # Resolve o símbolo associado ao rótulo (label) no scope atual
         simbolo = self.current_scope.resolve(key)
-        # Verifica se o rótulo está presente no escopo e se é do tipo 'label'
+        # Verifica se o rótulo está presente no scope e se é do tipo 'label'
         if simbolo is None or simbolo.type != 'label':
             raise SemanticError(f"GOTO para label '{label}' que não está declarada.")
         
@@ -957,7 +957,7 @@ class SemanticAnalyzer:
     def visit_label_stmt(self, node):
         _, label, stmt = node
         key = str(label).lower()
-        # Resolve o símbolo associado ao rótulo (label) no escopo atual
+        # Resolve o símbolo associado ao rótulo (label) no scope atual
         simbolo = self.current_scope.resolve(key)
         # Verifica se o rótulo está declarado antes de ser usado
         if simbolo is None or simbolo.type != 'label':
@@ -998,7 +998,7 @@ class SemanticAnalyzer:
         expr_type = self.visit(expr)
         # Analisa o tipo da expressão após o operador 'not'
         if expr_type != 'boolean':
-            raise SemanticError(f"Operador 'not' espera expressão do tipo boolean, mas recebeu {expr_type}.")
+            raise SemanticError(f"Operador 'not' espera expressão do tipo boolean, mas é do tipo {expr_type}.")
         # O resultado do operador 'not' também é do tipo 'boolean'
         return 'boolean'
     

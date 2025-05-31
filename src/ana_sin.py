@@ -6,6 +6,7 @@ import ply.yacc as yacc
 #    - 'nonassoc'  : operador não associativo (p.ex., ELSE encadeado com IF)
 #    - 'left'      : associatividade à esquerda (p.ex., OR, AND, operadores aritméticos)
 #    - 'right'     : associatividade à direita (p.ex., NOT)
+
 precedence = (
     # Evita ambiguidade entre IF-ELSE encadeados
     ('nonassoc', 'IFX'),       # regra interna para IF sem ELSE    

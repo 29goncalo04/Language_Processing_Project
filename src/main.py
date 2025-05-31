@@ -4,15 +4,13 @@ from ana_sin import parse
 from ana_sem import*
 from gerador_codigo import CodeGenerator
 
-from pprint import PrettyPrinter
-
 def main():
     if len(sys.argv) != 2:
         print("Uso: python main.py <nome do ficheiro_pascal>")
         sys.exit(1)
 
     nome_ficheiro = sys.argv[1]
-    caminho_ficheiro = f"./tests/{nome_ficheiro}"
+    caminho_ficheiro = f"../tests/{nome_ficheiro}"
 
     if not os.path.isfile(caminho_ficheiro):
         print(f"Erro: o ficheiro '{caminho_ficheiro}' não existe.")
