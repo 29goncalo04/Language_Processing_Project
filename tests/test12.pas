@@ -1,5 +1,5 @@
 {exemplo 12 inventado}
-program PerfectosAteN;
+program PerfeitosAteN;
 var
   n, i, j, soma: integer;
 begin
